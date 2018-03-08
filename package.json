@@ -1,10 +1,11 @@
 {
   "name": "pomment",
   "version": "1.0.0",
-  "description": "A solution of blog comment API",
+  "description": "The backend of Pomment Suite",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
@@ -12,13 +13,15 @@
   },
   "keywords": [
     "comment",
-    "blog",
     "api",
     "server"
   ],
   "author": "tcdw <tcdw2011gmail.com>",
   "license": "BSD-3-Clause",
   "dependencies": {
-    "express": "^4.16.2"
+    "koa": "^2.5.0",
+    "koa-body": "^2.5.0",
+    "koa-logger": "^3.1.0",
+    "koa-router": "^7.4.0"
   }
 }
