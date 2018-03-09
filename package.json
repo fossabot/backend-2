@@ -19,9 +19,18 @@
   "author": "tcdw <tcdw2011gmail.com>",
   "license": "BSD-3-Clause",
   "dependencies": {
+    "fs-extra": "^5.0.0",
+    "json-beautify": "^1.0.1",
     "koa": "^2.5.0",
     "koa-body": "^2.5.0",
     "koa-logger": "^3.1.0",
-    "koa-router": "^7.4.0"
+    "koa-router": "^7.4.0",
+    "minimist": "^1.2.0",
+    "scanf": "^1.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^4.18.2",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.9.0"
   }
 }

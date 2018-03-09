@@ -1,17 +1,10 @@
-const logger = require('koa-logger');
-const router = require('koa-router')();
-const koaBody = require('koa-body');
-
 const Koa = require('koa');
-const app = module.exports = new Koa();
+const logger = require('koa-logger');
+const rout = require('koa-router')();
+const koaBody = require('koa-body');
+const printLog = require('./lib/log');
 
-app.use(logger());
-app.use(koaBody());
-
-router.get('/', list)
-    .get('/post/:id', show)
-
-app.use(router.routes());
+const app = new Koa();
 
 async function list(ctx) {
     console.log(ctx);
@@ -19,7 +12,13 @@ async function list(ctx) {
 }
 
 async function show(ctx) {
-    ctx.response.body = 'Hello World! id: ' + ctx.params.id;
+    ctx.response.body = `Hello World! id: ${ctx.params.id}`;
 }
 
-if (!module.parent) app.listen(3000);
+app.use(logger());
+app.use(koaBody());
+rout.get('/', list)
+    .get('/post/:id', show);
+app.use(rout.routes());
+
+module.exports = app;
