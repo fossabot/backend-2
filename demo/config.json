@@ -1,16 +1,9 @@
 {
     "name": "demo",
-    "database": {
-        "arch": "mysql",
-        "host": "localhost",
-        "port": 3306,
-        "name": "pomment",
-        "username": "root"
-    },
     "admin": [
         {
             "username": "admin",
-            "password": "01b307acba4f54f55aafc33bb06bbbf6ca803e9a"
+            "password": "168cbf788f4d57c1f8edc5acb57675e83a5285f7"
         }
     ]
 }
