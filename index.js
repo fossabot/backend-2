@@ -13,7 +13,7 @@ const showHelp = () => {
 Avaliable commands:
 
  - init [PATH]\tInit a Pomment data directory
- - web\t\tRun the web service`);
+ - web [PORT]\tRun the web service. Default port is 3000`);
 };
 
 switch (argv._[0]) {
@@ -22,8 +22,12 @@ case 'init': {
     break;
 }
 case 'web': {
-    server.listen(3000);
-    printLog('info', 'The HTTP server is listening port 3000');
+    const webPort = typeof argv._[1] !== 'undefined' ? Number(argv._[1]) : 3000;
+    if (typeof process.getuid !== 'undefined' && process.getuid() === 0) {
+        printLog('warn', 'Running Pomment as root is NOT recommended.');
+    }
+    server.listen(webPort);
+    printLog('info', `The HTTP server is listening port ${webPort}`);
     break;
 }
 case 'version': {
@@ -36,6 +40,7 @@ case 'help': {
     break;
 }
 default: {
+    printLog('error', 'At least one command is required');
     showHelp();
     process.exit(1);
     break;
