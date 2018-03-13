@@ -3,11 +3,12 @@ const logger = require('koa-logger');
 const rout = require('koa-router')();
 const koaBody = require('koa-body');
 const beautify = require('json-beautify');
-// const printLog = require('./lib/log');
-
+const argv = require('minimist')(process.argv.slice(2));
+const getConfig = require('./lib/config');
 const showThread = require('./route/show-thread');
 
 const app = new Koa();
+const config = getConfig(argv._[1]);
 
 const unknownCommand = async (ctx) => {
     ctx.response.body = beautify({
@@ -18,6 +19,10 @@ const unknownCommand = async (ctx) => {
 
 app.use(logger());
 app.use(koaBody());
+app.use((ctx, next) => {
+    ctx.userConfig = config;
+    return next();
+});
 rout.get('/', unknownCommand)
     .get('/v1/thread/:name', showThread);
 app.use(rout.routes());
