@@ -7,6 +7,8 @@ const server = require('./server');
 const fs = require('fs');
 const path = require('path');
 
+printLog('debug', JSON.stringify(argv));
+
 const showHelp = () => {
     console.log(`Usage: pomment COMMAND [OPTION]...
 
@@ -26,7 +28,7 @@ case 'web': {
     if (typeof process.getuid !== 'undefined' && process.getuid() === 0) {
         printLog('warn', 'Running Pomment as root is NOT recommended.');
     }
-    server.listen(webPort);
+    server(webPort);
     printLog('info', `The HTTP server is listening port ${webPort}`);
     break;
 }
