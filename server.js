@@ -5,7 +5,9 @@ const koaBody = require('koa-body');
 const beautify = require('json-beautify');
 const argv = require('minimist')(process.argv.slice(2));
 const getConfig = require('./lib/config');
+
 const showThread = require('./route/show-thread');
+const submit = require('./route/submit');
 
 const app = new Koa();
 let config;
@@ -27,7 +29,8 @@ app.use((ctx, next) => {
 });
 
 rout.get('/', unknownCommand)
-    .get('/v1/thread/:name', showThread);
+    .get('/v1/thread/:name', showThread)
+    .post('/v1/thread/:name/submit', submit);
 app.use(rout.routes());
 
 module.exports = (webPort) => {

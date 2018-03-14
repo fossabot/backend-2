@@ -1,8 +1,10 @@
 const fs = require('fs');
 const path = require('path');
 const beautify = require('json-beautify');
+const printLog = require('../lib/log');
 
 module.exports = async (ctx) => {
+    printLog('debug', `Use route handler ${__filename}`);
     const absPath = p => path.resolve(ctx.userConfig.basePath, 'threads', `${p}.db`);
     ctx.type = 'application/json';
     if (fs.existsSync(absPath(ctx.params.name))) {
