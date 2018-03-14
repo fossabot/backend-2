@@ -2,6 +2,7 @@ const path = require('path');
 const Sequelize = require('sequelize');
 const printLog = require('../lib/log');
 const randChar = require('../lib/randchar');
+const structPost = require('../struct/post');
 
 module.exports = async (ctx) => {
     printLog('debug', `Use route handler ${__filename}`);
@@ -16,48 +17,7 @@ module.exports = async (ctx) => {
     });
 
     printLog('debug', 'define table `post`');
-    const Post = sequelize.define('post', {
-        name: {
-            type: Sequelize.STRING(128),
-            allowNull: false,
-        },
-        email: {
-            type: Sequelize.STRING(255),
-            allowNull: true,
-        },
-        website: {
-            type: Sequelize.TEXT(),
-            allowNull: true,
-        },
-        parent: {
-            type: Sequelize.INTEGER(),
-            allowNull: true,
-        },
-        content: {
-            type: Sequelize.TEXT(),
-            allowNull: false,
-        },
-        hash: {
-            type: Sequelize.CHAR(64),
-            allowNull: true,
-        },
-        moderated: {
-            type: Sequelize.BOOLEAN(),
-            allowNull: false,
-        },
-        hidden: {
-            type: Sequelize.BOOLEAN(),
-            allowNull: false,
-        },
-        ip: {
-            type: Sequelize.CHAR(48),
-            allowNull: true,
-        },
-        user_agent: {
-            type: Sequelize.TEXT(),
-            allowNull: true,
-        },
-    });
+    const Post = sequelize.define('post', structPost);
     await sequelize.sync();
     await Post.create({
         name: info.name,
