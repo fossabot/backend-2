@@ -1,20 +1,13 @@
-const fs = require('fs');
 const path = require('path');
 const Sequelize = require('sequelize');
 const printLog = require('../lib/log');
 const randChar = require('../lib/randchar');
-const initThread = require('../lib/initThread');
 
 module.exports = async (ctx) => {
     printLog('debug', `Use route handler ${__filename}`);
     const info = ctx.request.body;
     const absPath = path.resolve(ctx.userConfig.basePath, 'threads', `${ctx.params.name}.db`);
     printLog('debug', `Variable absPath: ${absPath}`);
-
-    if (!fs.existsSync(absPath)) {
-        printLog('info', `Creating new database for thread ${ctx.params.name}`);
-        await initThread(absPath);
-    }
 
     const sequelize = new Sequelize('main', null, null, {
         dialect: 'sqlite',
@@ -65,7 +58,8 @@ module.exports = async (ctx) => {
             allowNull: true,
         },
     });
-    Post.create({
+    await sequelize.sync();
+    await Post.create({
         name: info.name,
         email: info.email,
         website: info.website,
