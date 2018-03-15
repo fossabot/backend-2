@@ -3,6 +3,7 @@ const path = require('path');
 const Sequelize = require('sequelize');
 const printLog = require('../lib/log');
 const randChar = require('../lib/randchar');
+const unHtml = require('../lib/unhtml');
 const structPost = require('../struct/post');
 
 module.exports = async (ctx) => {
@@ -29,7 +30,7 @@ module.exports = async (ctx) => {
         email: info.email,
         website: info.website,
         parent: info.parent,
-        content: info.content,
+        content: unHtml(info.content),
         hash,
         moderated: false,
         hidden: false,
@@ -43,7 +44,7 @@ module.exports = async (ctx) => {
             email: info.email,
             website: info.website,
             parent: info.parent,
-            content: info.content,
+            content: unHtml(info.content),
             hash,
             moderated: false,
         },
