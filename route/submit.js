@@ -11,7 +11,7 @@ module.exports = async (ctx) => {
     const absPath = path.resolve(ctx.userConfig.basePath, 'threads', `${ctx.params.name}.db`);
     printLog('debug', `Variable absPath: ${absPath}`);
 
-    if (fs.existsSync(absPath)) {
+    if (!fs.existsSync(absPath)) {
         fs.copyFileSync(path.resolve(ctx.userConfig.basePath, 'template/thread.db'), absPath);
     }
 
