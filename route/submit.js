@@ -18,6 +18,7 @@ module.exports = async (ctx) => {
 
     printLog('debug', 'define table `post`');
     const Post = sequelize.define('post', structPost);
+    const hash = randChar(16);
     await sequelize.sync();
     await Post.create({
         name: info.name,
@@ -25,7 +26,7 @@ module.exports = async (ctx) => {
         website: info.website,
         parent: info.parent,
         content: info.content,
-        hash: randChar(16),
+        hash,
         moderated: false,
         hidden: false,
         ip: ctx.ip,
@@ -33,17 +34,14 @@ module.exports = async (ctx) => {
     });
     const output = {
         status: 'success',
-        test: {
+        content: {
             name: info.name,
             email: info.email,
             website: info.website,
             parent: info.parent,
             content: info.content,
-            hash: randChar(16),
+            hash,
             moderated: false,
-            hidden: false,
-            ip: ctx.ip,
-            user_agent: ctx.request.header['user-agent'],
         },
     };
     ctx.type = 'application/json';
