@@ -50,5 +50,4 @@ module.exports = async (ctx) => {
     };
     ctx.type = 'application/json';
     ctx.response.body = output;
-    console.log(ctx.userConfig);
 };
