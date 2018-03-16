@@ -54,6 +54,7 @@ module.exports = async (ctx) => {
 
     printLog('debug', 'define table `post`');
     const Post = sequelize.define('post', structPost);
+    const birth = new Date();
     await Post.create({
         name: info.name,
         email: info.email || '',
@@ -64,6 +65,7 @@ module.exports = async (ctx) => {
         hidden: false,
         ip: ctx.ip,
         user_agent: ctx.request.header['user-agent'],
+        birth,
     });
     const output = {
         status: 'success',
@@ -74,6 +76,7 @@ module.exports = async (ctx) => {
             parent: info.parent,
             content: unHtml(info.content),
             moderated: !ctx.userConfig.moderation,
+            birth,
         },
     };
     ctx.response.body = JSON.stringify(output, null, 4);

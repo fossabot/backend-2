@@ -10,6 +10,7 @@ module.exports = {
     hidden: { type: Sequelize.BOOLEAN(), allowNull: false },
     ip: { type: Sequelize.CHAR(48), allowNull: true },
     user_agent: { type: Sequelize.TEXT(), allowNull: true },
+    birth: { type: Sequelize.DATE(), allowNull: false },
     location: { type: Sequelize.TEXT(), allowNull: false },
     origin_id: { type: Sequelize.INTEGER(), allowNull: false },
 };
