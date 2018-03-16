@@ -1,7 +1,6 @@
 const fs = require('fs-extra');
 const path = require('path');
 const Sequelize = require('sequelize');
-const beautify = require('json-beautify');
 const printLog = require('../lib/log');
 const randChar = require('../lib/randchar');
 const unHtml = require('../lib/unhtml');
@@ -55,7 +54,7 @@ module.exports = async (ctx) => {
             moderated: !ctx.userConfig.moderation,
         },
     };
-    ctx.response.body = beautify(output, null, 4);
+    ctx.response.body = JSON.stringify(output, null, 4);
 
     // 客户端处理完毕后
     printLog('debug', 'Checking post amount');

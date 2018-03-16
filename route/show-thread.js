@@ -1,7 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 const Sequelize = require('sequelize');
-const beautify = require('json-beautify');
 const printLog = require('../lib/log');
 const structPost = require('../struct/post');
 
@@ -27,13 +26,12 @@ module.exports = async (ctx) => {
             },
         });
 
-        ctx.response.body = beautify({
+        ctx.response.body = JSON.stringify({
             name: ctx.params.name,
             content,
         }, null, 4);
-        // TODO: 若干 SQL 逻辑
     } else {
-        ctx.response.body = beautify({
+        ctx.response.body = JSON.stringify({
             name: ctx.params.name,
             content: {},
         }, null, 4);

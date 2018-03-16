@@ -20,7 +20,6 @@
   "license": "BSD-3-Clause",
   "dependencies": {
     "fs-extra": "^5.0.0",
-    "json-beautify": "^1.0.1",
     "koa": "^2.5.0",
     "koa-body": "^2.5.0",
     "koa-logger": "^3.1.0",

@@ -2,7 +2,6 @@ const Koa = require('koa');
 const logger = require('koa-logger');
 const rout = require('koa-router')();
 const koaBody = require('koa-body');
-const beautify = require('json-beautify');
 const argv = require('minimist')(process.argv.slice(2));
 const getConfig = require('./lib/config');
 
@@ -13,7 +12,7 @@ const app = new Koa();
 let config;
 
 const unknownCommand = async (ctx) => {
-    ctx.response.body = beautify({
+    ctx.response.body = JSON.stringify({
         message: 'Unknown command',
         documentation_url: 'https://www.example.com',
     }, null, 4);
