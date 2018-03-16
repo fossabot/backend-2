@@ -38,11 +38,13 @@ module.exports = async (ctx) => {
         });
 
         ctx.response.body = JSON.stringify({
+            status: 'success',
             name: ctx.params.name,
             content,
         }, null, 4);
     } else {
         ctx.response.body = JSON.stringify({
+            status: 'success',
             name: ctx.params.name,
             content: {},
         }, null, 4);
