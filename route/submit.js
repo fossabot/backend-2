@@ -10,6 +10,9 @@ const structPost = require('../struct/post');
 
 module.exports = async (ctx) => {
     printLog('debug', `Use route handler ${__filename}`);
+    ctx.type = 'application/json';
+    ctx.response.body = 'application/json';
+
     const info = ctx.request.body;
     const absPath = path.resolve(ctx.userConfig.basePath, 'threads', `${ctx.params.name}.db`);
     let isFirst = false;
@@ -36,7 +39,7 @@ module.exports = async (ctx) => {
         parent: info.parent,
         content: unHtml(info.content),
         hash,
-        moderated: false,
+        moderated: !ctx.userConfig.moderation,
         hidden: false,
         ip: ctx.ip,
         user_agent: ctx.request.header['user-agent'],

@@ -7,9 +7,12 @@ const structPost = require('../struct/post');
 
 module.exports = async (ctx) => {
     printLog('debug', `Use route handler ${__filename}`);
-    const absPath = p => path.resolve(ctx.userConfig.basePath, 'threads', `${p}.db`);
     ctx.type = 'application/json';
-    if (fs.existsSync(absPath(ctx.params.name))) {
+    ctx.response.body = 'application/json';
+
+    const absPath = path.resolve(ctx.userConfig.basePath, 'threads', `${ctx.params.name}.db`);
+    printLog('debug', `Variable absPath: ${absPath}`);
+    if (fs.existsSync(absPath)) {
         const sequelize = new Sequelize('main', null, null, {
             dialect: 'sqlite',
             storage: absPath,
@@ -17,17 +20,18 @@ module.exports = async (ctx) => {
         });
 
         const Post = sequelize.define('post', structPost);
-        Post.findAll({
+        const content = await Post.findAll({
             attributes: ['name', 'email', 'website', 'parent', 'content'],
             where: {
                 moderated: true,
                 hidden: false,
             },
         });
+        console.log(content);
 
         ctx.response.body = beautify({
             name: ctx.params.name,
-            exist: true,
+            content,
         }, null, 4);
         // TODO: 若干 SQL 逻辑
     } else {
