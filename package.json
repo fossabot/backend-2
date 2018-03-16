@@ -19,6 +19,7 @@
   "author": "tcdw <tcdw2011gmail.com>",
   "license": "BSD-3-Clause",
   "dependencies": {
+    "email-validator": "^1.1.1",
     "fs-extra": "^5.0.0",
     "koa": "^2.5.0",
     "koa-body": "^2.5.0",

@@ -1,10 +1,13 @@
 const fs = require('fs-extra');
 const path = require('path');
 const Sequelize = require('sequelize');
+const isVaildEmail = require('email-validator').validate;
 const printLog = require('../lib/log');
 const unHtml = require('../lib/unhtml');
 const updateCounter = require('../lib/update-counter');
 const structPost = require('../struct/post');
+
+const isBlank = str => (typeof str === 'undefined' || str === null || str.trim() === '');
 
 module.exports = async (ctx) => {
     printLog('debug', `Use route handler ${__filename}`);
@@ -14,6 +17,29 @@ module.exports = async (ctx) => {
     const absPath = path.resolve(ctx.userConfig.basePath, 'threads', `${ctx.params.name}.db`);
     let isFirst = false;
     printLog('debug', `Variable absPath: ${absPath}`);
+
+    // 前置检查
+    if (isBlank(info.name)) {
+        ctx.status = 400;
+        ctx.response.body = JSON.stringify({ status: 'error', info: 'invaild name' }, null, 4);
+        return false;
+    }
+    if (ctx.userConfig.info.requiredInfo.email
+        && (isBlank(info.email) || !isVaildEmail(info.email))) {
+        ctx.status = 400;
+        ctx.response.body = JSON.stringify({ status: 'error', info: 'invaild email' }, null, 4);
+        return false;
+    }
+    if (ctx.userConfig.info.requiredInfo.website && isBlank(info.website)) {
+        ctx.status = 400;
+        ctx.response.body = JSON.stringify({ status: 'error', info: 'invaild website' }, null, 4);
+        return false;
+    }
+    if (isBlank(info.content)) {
+        ctx.status = 400;
+        ctx.response.body = JSON.stringify({ status: 'error', info: 'invaild content' }, null, 4);
+        return false;
+    }
 
     if (!fs.existsSync(absPath)) {
         fs.copyFileSync(path.resolve(ctx.userConfig.basePath, 'template/thread.db'), absPath);
@@ -30,8 +56,8 @@ module.exports = async (ctx) => {
     const Post = sequelize.define('post', structPost);
     await Post.create({
         name: info.name,
-        email: info.email,
-        website: info.website,
+        email: info.email || '',
+        website: info.website || '',
         parent: info.parent,
         content: unHtml(info.content),
         moderated: !ctx.userConfig.moderation,
@@ -43,8 +69,8 @@ module.exports = async (ctx) => {
         status: 'success',
         content: {
             name: info.name,
-            email: info.email,
-            website: info.website,
+            email: info.email || '',
+            website: info.website || '',
             parent: info.parent,
             content: unHtml(info.content),
             moderated: !ctx.userConfig.moderation,
@@ -64,4 +90,5 @@ module.exports = async (ctx) => {
 
     printLog('debug', 'Updating counter');
     updateCounter(ctx.userConfig.basePath, ctx.params.name, postAmount, isFirst);
+    return true;
 };
