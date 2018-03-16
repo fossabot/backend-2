@@ -57,11 +57,14 @@ module.exports = async (ctx) => {
     ctx.response.body = beautify(output, null, 4);
 
     // 客户端处理完毕后
-    const postAmount = await Post.findAll({
+    printLog('debug', 'Checking post amount');
+    const postAmount = Array.from(await Post.findAll({
         where: {
             moderated: false,
         },
-    }).length;
+    })).length;
+    printLog('debug', `Post amount: ${postAmount}`);
 
+    printLog('debug', 'Updating counter');
     updateCounter(ctx.userConfig.basePath, ctx.params.name, postAmount, isFirst);
 };
