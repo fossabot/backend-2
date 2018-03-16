@@ -8,7 +8,6 @@ const structPost = require('../struct/post');
 module.exports = async (ctx) => {
     printLog('debug', `Use route handler ${__filename}`);
     ctx.type = 'application/json';
-    ctx.response.body = 'application/json';
 
     const absPath = path.resolve(ctx.userConfig.basePath, 'threads', `${ctx.params.name}.db`);
     printLog('debug', `Variable absPath: ${absPath}`);
@@ -27,7 +26,6 @@ module.exports = async (ctx) => {
                 hidden: false,
             },
         });
-        console.log(content);
 
         ctx.response.body = beautify({
             name: ctx.params.name,

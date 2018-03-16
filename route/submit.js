@@ -11,7 +11,6 @@ const structPost = require('../struct/post');
 module.exports = async (ctx) => {
     printLog('debug', `Use route handler ${__filename}`);
     ctx.type = 'application/json';
-    ctx.response.body = 'application/json';
 
     const info = ctx.request.body;
     const absPath = path.resolve(ctx.userConfig.basePath, 'threads', `${ctx.params.name}.db`);
@@ -56,7 +55,6 @@ module.exports = async (ctx) => {
             moderated: !ctx.userConfig.moderation,
         },
     };
-    ctx.type = 'application/json';
     ctx.response.body = beautify(output, null, 4);
 
     // 客户端处理完毕后
