@@ -50,7 +50,7 @@ module.exports = async (ctx) => {
             parent: info.parent,
             content: unHtml(info.content),
             hash,
-            moderated: false,
+            moderated: !ctx.userConfig.moderation,
         },
     };
     ctx.type = 'application/json';
@@ -60,7 +60,8 @@ module.exports = async (ctx) => {
     printLog('debug', 'Checking post amount');
     const postAmount = Array.from(await Post.findAll({
         where: {
-            moderated: false,
+            moderated: true,
+            hidden: false,
         },
     })).length;
     printLog('debug', `Post amount: ${postAmount}`);
