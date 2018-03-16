@@ -2,7 +2,6 @@ const fs = require('fs-extra');
 const path = require('path');
 const Sequelize = require('sequelize');
 const printLog = require('../lib/log');
-const randChar = require('../lib/randchar');
 const unHtml = require('../lib/unhtml');
 const updateCounter = require('../lib/update-counter');
 const structPost = require('../struct/post');
@@ -29,14 +28,12 @@ module.exports = async (ctx) => {
 
     printLog('debug', 'define table `post`');
     const Post = sequelize.define('post', structPost);
-    const hash = randChar(16);
     await Post.create({
         name: info.name,
         email: info.email,
         website: info.website,
         parent: info.parent,
         content: unHtml(info.content),
-        hash,
         moderated: !ctx.userConfig.moderation,
         hidden: false,
         ip: ctx.ip,
@@ -50,7 +47,6 @@ module.exports = async (ctx) => {
             website: info.website,
             parent: info.parent,
             content: unHtml(info.content),
-            hash,
             moderated: !ctx.userConfig.moderation,
         },
     };
