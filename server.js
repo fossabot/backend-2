@@ -5,7 +5,7 @@ const koaBody = require('koa-body');
 const argv = require('minimist')(process.argv.slice(2));
 const getConfig = require('./lib/config');
 
-const showThread = require('./route/show-thread');
+const show = require('./route/show');
 const submit = require('./route/submit');
 
 const app = new Koa();
@@ -28,7 +28,7 @@ app.use((ctx, next) => {
 });
 
 rout.get('/', unknownCommand)
-    .get('/v1/thread/:name', showThread)
+    .get('/v1/thread/:name', show)
     .post('/v1/thread/:name/submit', submit);
 app.use(rout.routes());
 

@@ -19,7 +19,7 @@ module.exports = async (ctx) => {
 
         const Post = sequelize.define('post', structPost);
         const content = await Post.findAll({
-            attributes: ['name', 'email', 'website', 'parent', 'content'],
+            attributes: ['name', 'email', 'website', 'parent', 'content', 'createdAt'],
             where: {
                 moderated: true,
                 hidden: false,
