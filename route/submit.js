@@ -53,7 +53,10 @@ module.exports = async (ctx) => {
     });
 
     printLog('debug', 'define table `post`');
-    const Post = sequelize.define('post', structPost);
+    const Post = sequelize.define('post', structPost, {
+        createdAt: false,
+        updatedAt: false,
+    });
     const birth = new Date();
     await Post.create({
         name: info.name,
@@ -91,7 +94,7 @@ module.exports = async (ctx) => {
     })).length;
     printLog('debug', `Post amount: ${postAmount}`);
 
-    printLog('debug', 'Updating counter');
+    printLog('info', 'Updating counter');
     updateCounter(ctx.userConfig.basePath, ctx.params.name, postAmount, isFirst);
     return true;
 };

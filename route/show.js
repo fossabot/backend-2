@@ -18,10 +18,13 @@ module.exports = async (ctx) => {
             operatorsAliases: false,
         });
 
-        const Post = sequelize.define('post', structPost);
+        const Post = sequelize.define('post', structPost, {
+            createdAt: false,
+            updatedAt: false,
+        });
         const content = [];
         const tmpContent = await Post.findAll({
-            attributes: ['name', 'email', 'website', 'parent', 'content', 'createdAt'],
+            attributes: ['name', 'email', 'website', 'parent', 'birth', 'content'],
             where: {
                 moderated: true,
                 hidden: false,
