@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const Sequelize = require('sequelize');
+const crypto = require('crypto');
 const printLog = require('../lib/log');
 const structPost = require('../struct/post');
 
@@ -18,12 +19,22 @@ module.exports = async (ctx) => {
         });
 
         const Post = sequelize.define('post', structPost);
-        const content = await Post.findAll({
+        const content = [];
+        const tmpContent = await Post.findAll({
             attributes: ['name', 'email', 'website', 'parent', 'content', 'createdAt'],
             where: {
                 moderated: true,
                 hidden: false,
             },
+        });
+
+        Array.from(tmpContent).forEach((item) => {
+            const newItem = item;
+            const emailHashed = crypto.createHash('md5');
+            emailHashed.update(newItem.email);
+            newItem.dataValues.emailHashed = emailHashed.digest('hex');
+            delete newItem.dataValues.email;
+            content.push(newItem);
         });
 
         ctx.response.body = JSON.stringify({
