@@ -12,8 +12,10 @@ const app = new Koa();
 let config;
 
 const unknownCommand = async (ctx) => {
+    console.log(ctx.userConfig);
     ctx.response.body = JSON.stringify({
-        message: 'Unknown command',
+        api_version: 1,
+        required_info: ctx.userConfig.info.requiredInfo,
         documentation_url: 'https://www.example.com',
     }, null, 4);
 };
