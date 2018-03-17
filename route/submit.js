@@ -5,6 +5,7 @@ const isVaildEmail = require('email-validator').validate;
 const printLog = require('../lib/log');
 const unHtml = require('../lib/unhtml');
 const updateCounter = require('../lib/update-counter');
+const addUnread = require('../lib/add-unread');
 const structPost = require('../struct/post');
 
 const isBlank = str => (typeof str === 'undefined' || str === null || str.trim() === '');
@@ -51,14 +52,8 @@ module.exports = async (ctx) => {
         storage: absPath,
         operatorsAliases: false,
     });
-
-    printLog('debug', 'define table `post`');
-    const Post = sequelize.define('post', structPost, {
-        createdAt: false,
-        updatedAt: false,
-    });
     const birth = new Date();
-    await Post.create({
+    const content = {
         name: info.name,
         email: info.email || '',
         website: info.website || '',
@@ -69,7 +64,15 @@ module.exports = async (ctx) => {
         ip: ctx.ip,
         user_agent: ctx.request.header['user-agent'],
         birth,
+    };
+
+    printLog('debug', 'define table `post`');
+    const Post = sequelize.define('post', structPost, {
+        createdAt: false,
+        updatedAt: false,
     });
+    console.log('aaaaaaaa');
+    const create = await Post.create(content);
     const output = {
         status: 'success',
         content: {
@@ -96,5 +99,6 @@ module.exports = async (ctx) => {
 
     printLog('info', 'Updating counter');
     updateCounter(ctx.userConfig.basePath, ctx.params.name, postAmount, isFirst);
+    addUnread(ctx.userConfig.basePath, content, ctx.params.name, create.dataValues.id);
     return true;
 };
