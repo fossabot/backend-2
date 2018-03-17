@@ -47,6 +47,7 @@ module.exports = async (ctx) => {
         isFirst = true;
     }
 
+    // 数据添加准备
     const sequelize = new Sequelize('main', null, null, {
         dialect: 'sqlite',
         storage: absPath,
@@ -66,13 +67,21 @@ module.exports = async (ctx) => {
         birth,
     };
 
+    // 添加数据
     printLog('debug', 'define table `post`');
     const Post = sequelize.define('post', structPost, {
         createdAt: false,
         updatedAt: false,
     });
-    console.log('aaaaaaaa');
-    const create = await Post.create(content);
+    let create;
+    try {
+        create = await Post.create(content);
+    } catch (e) {
+        printLog('error', `An error occurred while adding the data: ${e}`);
+        ctx.status = 500;
+        ctx.response.body = JSON.stringify({ status: 'error', info: 'add comment failed' }, null, 4);
+        return false;
+    }
     const output = {
         status: 'success',
         content: {
@@ -96,9 +105,13 @@ module.exports = async (ctx) => {
         },
     })).length;
     printLog('debug', `Post amount: ${postAmount}`);
-
-    printLog('info', 'Updating counter');
-    updateCounter(ctx.userConfig.basePath, ctx.params.name, postAmount, isFirst);
-    addUnread(ctx.userConfig.basePath, content, ctx.params.name, create.dataValues.id);
+    try {
+        printLog('info', 'Updating counter');
+        await updateCounter(ctx.userConfig.basePath, ctx.params.name, postAmount, isFirst);
+        printLog('info', 'Updating recent list');
+        await addUnread(ctx.userConfig.basePath, content, ctx.params.name, create.dataValues.id);
+    } catch (e) {
+        printLog('error', `An error occurred while doing the after-client progress: ${e}`);
+    }
     return true;
 };
