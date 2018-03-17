@@ -5,6 +5,7 @@ const printLog = require('./lib/log');
 const setup = require('./lib/setup');
 const template = require('./lib/template');
 const server = require('./server');
+const resetPassword = require('./lib/reset-password');
 const fs = require('fs');
 const path = require('path');
 
@@ -15,8 +16,9 @@ const showHelp = () => {
 
 Avaliable commands:
 
- - init [PATH]\t\tInit a Pomment data directory
- - web [PATH] [-p PORT]\tRun the web service. Default port is 3000`);
+ - init [PATH]\t\t\tInit a Pomment data directory
+ - web [PATH] [-p PORT]\t\tRun the web service. Default port is 3000
+ - reset-password [PATH]\tReset admin's password`);
 };
 
 switch (argv._[0]) {
@@ -33,6 +35,10 @@ case 'web': {
     }
     server(webPort);
     printLog('info', `The HTTP server is listening port ${webPort}`);
+    break;
+}
+case 'reset-password': {
+    resetPassword(argv._[1]);
     break;
 }
 case 'version': {
