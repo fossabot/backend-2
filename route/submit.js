@@ -96,7 +96,7 @@ module.exports = async (ctx) => {
     };
     ctx.response.body = JSON.stringify(output, null, 4);
 
-    // 客户端处理完毕后
+    // 客户端处理完毕后，更新评论计数器，增加最近评论
     printLog('debug', 'Checking post amount');
     const postAmount = Array.from(await Post.findAll({
         where: {
@@ -113,5 +113,24 @@ module.exports = async (ctx) => {
     } catch (e) {
         printLog('error', `An error occurred while doing the after-client progress: ${e}`);
     }
+
+    // 发送邮件
+    const sendMail = option => new Promise((resolve, reject) => {
+        ctx.mailTransport.sendMail(option, (err) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve();
+            }
+        });
+    });
+
+    await sendMail({
+        from: '',
+        to: '',
+        subject: '',
+        text: '',
+        html: '',
+    });
     return true;
 };
