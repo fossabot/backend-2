@@ -115,22 +115,16 @@ module.exports = async (ctx) => {
     }
 
     // 发送邮件
-    const sendMail = option => new Promise((resolve, reject) => {
-        ctx.mailTransport.sendMail(option, (err) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve();
-            }
+    /* if (ctx.userConfig.info.mail) {
+        const sendMail = option => new Promise((resolve, reject) => {
+            ctx.mailTransport.sendMail(option, (err) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve();
+                }
+            });
         });
-    });
-
-    await sendMail({
-        from: '',
-        to: '',
-        subject: '',
-        text: '',
-        html: '',
-    });
+    } */
     return true;
 };
