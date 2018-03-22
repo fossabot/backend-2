@@ -128,7 +128,7 @@ module.exports = async (ctx) => {
                 create.dataValues.id,
             );
         } catch (e) {
-            printLog('error', `An error occurred while updating counter: ${e}`);
+            printLog('error', `An error occurred while updating data: ${e}`);
         }
 
         // 发送邮件
