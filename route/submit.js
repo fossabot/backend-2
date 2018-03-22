@@ -14,43 +14,41 @@ const isBlank = str => (typeof str === 'undefined' || str === null || str.trim()
 module.exports = async (ctx) => {
     printLog('debug', `Use route handler ${__filename}`);
     ctx.type = 'application/json';
-
     const info = ctx.request.body;
     const absPath = path.resolve(ctx.userConfig.basePath, 'threads', `${ctx.params.name}.db`);
     let isFirst = false;
+    let currentError;
+
     printLog('debug', `Variable absPath: ${absPath}`);
 
     // 前置检查
     if (isBlank(info.name)) {
-        ctx.status = 400;
-        ctx.response.body = JSON.stringify({ status: 'error', info: 'invaild name' }, null, 4);
-        return false;
+        currentError = 'bad name';
     }
     if (ctx.userConfig.info.requiredInfo.email
         && (isBlank(info.email) || !isVaildEmail(info.email))) {
-        ctx.status = 400;
-        ctx.response.body = JSON.stringify({ status: 'error', info: 'invaild email' }, null, 4);
-        return false;
+        currentError = 'bad email';
     }
     if (ctx.userConfig.info.requiredInfo.website && isBlank(info.website)) {
-        ctx.status = 400;
-        ctx.response.body = JSON.stringify({ status: 'error', info: 'invaild website' }, null, 4);
-        return false;
+        currentError = 'bad website';
     }
     if (isBlank(info.content)) {
-        ctx.status = 400;
-        ctx.response.body = JSON.stringify({ status: 'error', info: 'invaild content' }, null, 4);
-        return false;
+        currentError = 'bad content';
     }
-
     if (!fs.existsSync(absPath)) {
         if (isBlank(info.title) && isBlank(info.url)) {
-            ctx.status = 400;
-            ctx.response.body = JSON.stringify({ status: 'error', info: 'article meta required' }, null, 4);
-            return false;
+            currentError = 'bad article meta';
+        } else {
+            fs.copyFileSync(path.resolve(ctx.userConfig.basePath, 'template/thread.db'), absPath);
+            isFirst = true;
         }
-        fs.copyFileSync(path.resolve(ctx.userConfig.basePath, 'template/thread.db'), absPath);
-        isFirst = true;
+    }
+
+    // 如果前置检查存在没有通过的项目
+    if (typeof currentError !== 'undefined') {
+        ctx.status = 400;
+        ctx.response.body = JSON.stringify({ status: 'error', info: currentError }, null, 4);
+        return false;
     }
 
     // 数据添加准备
