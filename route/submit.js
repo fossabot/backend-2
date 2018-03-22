@@ -160,5 +160,6 @@ module.exports = async (ctx) => {
             printLog('error', `An error occurred while sending email: ${e}`);
         }
     }
+    printLog('info', `All action regarding ${ctx.params.name} done`);
     return true;
 };
