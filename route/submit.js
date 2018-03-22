@@ -101,65 +101,67 @@ module.exports = async (ctx) => {
     ctx.response.body = JSON.stringify(output, null, 4);
 
     // 客户端处理完毕后，更新评论计数器，增加最近评论
-    printLog('debug', 'Checking post amount');
-    const postAmount = Array.from(await Post.findAll({
-        where: {
-            moderated: true,
-            hidden: false,
-        },
-    })).length;
-    printLog('debug', `Post amount: ${postAmount}`);
-    try {
-        printLog('info', 'Updating counter');
-        await updateCounter(
-            ctx.userConfig.basePath,
-            ctx.params.name,
-            postAmount,
-            isFirst,
-            info.title,
-            info.url,
-        );
-        printLog('info', 'Updating recent list');
-        await addUnread(ctx.userConfig.basePath, content, ctx.params.name, create.dataValues.id);
-    } catch (e) {
-        printLog('error', `An error occurred while updating counter: ${e}`);
-    }
-
-    // 发送邮件
-    if (ctx.userConfig.info.mail) {
-        printLog('info', 'Sending email');
-        const sendMail = option => new Promise((resolve, reject) => {
-            ctx.mailTransport.sendMail(option, (err) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve();
-                }
-            });
-        });
+    (async () => {
+        printLog('debug', 'Checking post amount');
+        const postAmount = Array.from(await Post.findAll({
+            where: {
+                moderated: true,
+                hidden: false,
+            },
+        })).length;
+        printLog('debug', `Post amount: ${postAmount}`);
         try {
-            const mailHtml = fs.readFileSync(path.resolve(ctx.userConfig.basePath, 'mail-template-admin.html'), { encoding: 'utf8' })
-                .replace(/{{ siteTitle }}/g, ctx.userConfig.info.name)
-                .replace(/{{ articleTitle }}/g, info.title)
-                .replace(/{{ articleURL }}/g, info.url)
-                .replace(/{{ name }}/g, info.name)
-                .replace(/{{ email }}/g, info.email)
-                .replace(/{{ website }}/g, info.website)
-                .replace(/{{ content }}/g, unHtml(info.content))
-                .replace(/{{ ip }}/g, ctx.ip)
-                .replace(/{{ userAgent }}/g, ctx.request.header['user-agent']);
-
-            await sendMail({
-                from: ctx.userConfig.info.senderMail,
-                to: ctx.userConfig.info.adminMail,
-                subject: `【${ctx.userConfig.info.name}】您的文章 ${info.title} 有了新的回复`,
-                text: htmlToText.fromString(mailHtml),
-                html: mailHtml,
-            });
+            printLog('info', 'Updating counter');
+            await updateCounter(
+                ctx.userConfig.basePath,
+                ctx.params.name,
+                postAmount,
+                isFirst,
+                info.title,
+                info.url,
+            );
+            printLog('info', 'Updating recent list');
+            await addUnread(ctx.userConfig.basePath, content, ctx.params.name, create.dataValues.id);
         } catch (e) {
-            printLog('error', `An error occurred while sending email: ${e}`);
+            printLog('error', `An error occurred while updating counter: ${e}`);
         }
-    }
-    printLog('info', `All action regarding ${ctx.params.name} done`);
-    return true;
+
+        // 发送邮件
+        if (ctx.userConfig.info.mail) {
+            printLog('info', 'Sending email');
+            const sendMail = option => new Promise((resolve, reject) => {
+                ctx.mailTransport.sendMail(option, (err) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve();
+                    }
+                });
+            });
+            try {
+                const mailHtml = fs.readFileSync(path.resolve(ctx.userConfig.basePath, 'mail-template-admin.html'), { encoding: 'utf8' })
+                    .replace(/{{ siteTitle }}/g, ctx.userConfig.info.name)
+                    .replace(/{{ articleTitle }}/g, info.title)
+                    .replace(/{{ articleURL }}/g, info.url)
+                    .replace(/{{ name }}/g, info.name)
+                    .replace(/{{ email }}/g, info.email)
+                    .replace(/{{ website }}/g, info.website)
+                    .replace(/{{ content }}/g, unHtml(info.content))
+                    .replace(/{{ ip }}/g, ctx.ip)
+                    .replace(/{{ userAgent }}/g, ctx.request.header['user-agent']);
+
+                await sendMail({
+                    from: ctx.userConfig.info.senderMail,
+                    to: ctx.userConfig.info.adminMail,
+                    subject: `【${ctx.userConfig.info.name}】您的文章 ${info.title} 有了新的回复`,
+                    text: htmlToText.fromString(mailHtml),
+                    html: mailHtml,
+                });
+            } catch (e) {
+                printLog('error', `An error occurred while sending email: ${e}`);
+            }
+        }
+        printLog('info', `All action regarding ${ctx.params.name} done`);
+        return true;
+    })();
 };
