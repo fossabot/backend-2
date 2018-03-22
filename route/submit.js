@@ -124,11 +124,12 @@ module.exports = async (ctx) => {
         printLog('info', 'Updating recent list');
         await addUnread(ctx.userConfig.basePath, content, ctx.params.name, create.dataValues.id);
     } catch (e) {
-        printLog('error', `An error occurred while doing the after-client progress: ${e}`);
+        printLog('error', `An error occurred while updating counter: ${e}`);
     }
 
     // 发送邮件
     if (ctx.userConfig.info.mail) {
+        printLog('info', 'Sending email');
         const sendMail = option => new Promise((resolve, reject) => {
             ctx.mailTransport.sendMail(option, (err) => {
                 if (err) {
@@ -138,24 +139,28 @@ module.exports = async (ctx) => {
                 }
             });
         });
-        const mailHtml = fs.readFileSync(path.resolve(ctx.userConfig.basePath, 'mail-template.html'), { encoding: 'utf8' })
-            .replace(/{{ siteTitle }}/g, ctx.userConfig.info.name)
-            .replace(/{{ articleTitle }}/g, info.title)
-            .replace(/{{ articleURL }}/g, info.url)
-            .replace(/{{ name }}/g, info.name)
-            .replace(/{{ email }}/g, info.email)
-            .replace(/{{ website }}/g, info.website)
-            .replace(/{{ content }}/g, unHtml(info.content))
-            .replace(/{{ ip }}/g, ctx.ip)
-            .replace(/{{ userAgent }}/g, ctx.request.header['user-agent']);
+        try {
+            const mailHtml = fs.readFileSync(path.resolve(ctx.userConfig.basePath, 'mail-template.html'), { encoding: 'utf8' })
+                .replace(/{{ siteTitle }}/g, ctx.userConfig.info.name)
+                .replace(/{{ articleTitle }}/g, info.title)
+                .replace(/{{ articleURL }}/g, info.url)
+                .replace(/{{ name }}/g, info.name)
+                .replace(/{{ email }}/g, info.email)
+                .replace(/{{ website }}/g, info.website)
+                .replace(/{{ content }}/g, unHtml(info.content))
+                .replace(/{{ ip }}/g, ctx.ip)
+                .replace(/{{ userAgent }}/g, ctx.request.header['user-agent']);
 
-        await sendMail({
-            from: ctx.userConfig.info.senderMail,
-            to: ctx.userConfig.info.adminMail,
-            subject: `您的文章 ${info.name} 有了新的回复`,
-            text: htmlToText.fromString(mailHtml),
-            html: mailHtml,
-        });
+            await sendMail({
+                from: ctx.userConfig.info.senderMail,
+                to: ctx.userConfig.info.adminMail,
+                subject: `您的文章 ${info.name} 有了新的回复`,
+                text: htmlToText.fromString(mailHtml),
+                html: mailHtml,
+            });
+        } catch (e) {
+            printLog('error', `An error occurred while sending email: ${e}`);
+        }
     }
     return true;
 };
