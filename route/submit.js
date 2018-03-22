@@ -43,6 +43,11 @@ module.exports = async (ctx) => {
     }
 
     if (!fs.existsSync(absPath)) {
+        if (isBlank(info.title) && isBlank(info.url)) {
+            ctx.status = 400;
+            ctx.response.body = JSON.stringify({ status: 'error', info: 'article meta required' }, null, 4);
+            return false;
+        }
         fs.copyFileSync(path.resolve(ctx.userConfig.basePath, 'template/thread.db'), absPath);
         isFirst = true;
     }
@@ -107,7 +112,14 @@ module.exports = async (ctx) => {
     printLog('debug', `Post amount: ${postAmount}`);
     try {
         printLog('info', 'Updating counter');
-        await updateCounter(ctx.userConfig.basePath, ctx.params.name, postAmount, isFirst);
+        await updateCounter(
+            ctx.userConfig.basePath,
+            ctx.params.name,
+            postAmount,
+            isFirst,
+            info.title,
+            info.url,
+        );
         printLog('info', 'Updating recent list');
         await addUnread(ctx.userConfig.basePath, content, ctx.params.name, create.dataValues.id);
     } catch (e) {
