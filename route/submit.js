@@ -121,7 +121,12 @@ module.exports = async (ctx) => {
                 info.url,
             );
             printLog('info', 'Updating recent list');
-            await addUnread(ctx.userConfig.basePath, content, ctx.params.name, create.dataValues.id);
+            await addUnread(
+                ctx.userConfig.basePath,
+                content,
+                ctx.params.name,
+                create.dataValues.id,
+            );
         } catch (e) {
             printLog('error', `An error occurred while updating counter: ${e}`);
         }
@@ -164,4 +169,5 @@ module.exports = async (ctx) => {
         printLog('info', `All action regarding ${ctx.params.name} done`);
         return true;
     })();
+    return true;
 };
