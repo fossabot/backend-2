@@ -2,6 +2,7 @@ const fs = require('fs-extra');
 const path = require('path');
 const Sequelize = require('sequelize');
 const isVaildEmail = require('email-validator').validate;
+const htmlToText = require('html-to-text');
 const printLog = require('../lib/log');
 const unHtml = require('../lib/unhtml');
 const updateCounter = require('../lib/update-counter');
@@ -127,7 +128,7 @@ module.exports = async (ctx) => {
     }
 
     // 发送邮件
-    /* if (ctx.userConfig.info.mail) {
+    if (ctx.userConfig.info.mail) {
         const sendMail = option => new Promise((resolve, reject) => {
             ctx.mailTransport.sendMail(option, (err) => {
                 if (err) {
@@ -137,6 +138,24 @@ module.exports = async (ctx) => {
                 }
             });
         });
-    } */
+        const mailHtml = fs.readFileSync(path.resolve(ctx.userConfig.basePath, 'mail-template.html'), { encoding: 'utf8' })
+            .replace(/{{ siteTitle }}/g, ctx.userConfig.info.name)
+            .replace(/{{ articleTitle }}/g, info.title)
+            .replace(/{{ articleURL }}/g, info.url)
+            .replace(/{{ name }}/g, info.name)
+            .replace(/{{ email }}/g, info.email)
+            .replace(/{{ website }}/g, info.website)
+            .replace(/{{ content }}/g, unHtml(info.content))
+            .replace(/{{ ip }}/g, ctx.ip)
+            .replace(/{{ userAgent }}/g, ctx.request.header['user-agent']);
+
+        await sendMail({
+            from: ctx.userConfig.info.senderMail,
+            to: ctx.userConfig.info.adminMail,
+            subject: `您的文章 ${info.name} 有了新的回复`,
+            text: htmlToText.fromString(mailHtml),
+            html: mailHtml,
+        });
+    }
     return true;
 };
