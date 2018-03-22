@@ -138,7 +138,7 @@ module.exports = async (ctx) => {
             });
         });
         try {
-            const mailHtml = fs.readFileSync(path.resolve(ctx.userConfig.basePath, 'mail-template.html'), { encoding: 'utf8' })
+            const mailHtml = fs.readFileSync(path.resolve(ctx.userConfig.basePath, 'mail-template-admin.html'), { encoding: 'utf8' })
                 .replace(/{{ siteTitle }}/g, ctx.userConfig.info.name)
                 .replace(/{{ articleTitle }}/g, info.title)
                 .replace(/{{ articleURL }}/g, info.url)
@@ -152,7 +152,7 @@ module.exports = async (ctx) => {
             await sendMail({
                 from: ctx.userConfig.info.senderMail,
                 to: ctx.userConfig.info.adminMail,
-                subject: `您的文章 ${info.name} 有了新的回复`,
+                subject: `【${ctx.userConfig.info.name}】您的文章 ${info.title} 有了新的回复`,
                 text: htmlToText.fromString(mailHtml),
                 html: mailHtml,
             });
