@@ -6,21 +6,14 @@ const argv = require('minimist')(process.argv.slice(2));
 const nodemailer = require('nodemailer');
 const getConfig = require('./lib/config');
 
+const systemInfo = require('./route/system-info');
 const show = require('./route/show');
 const submit = require('./route/submit');
+const unknown = require('./route/unknown');
 
 const app = new Koa();
 let mailTransport;
 let config;
-
-const unknownCommand = async (ctx) => {
-    console.log(ctx.userConfig);
-    ctx.response.body = JSON.stringify({
-        api_version: 1,
-        required_info: ctx.userConfig.info.requiredInfo,
-        documentation_url: 'https://www.example.com',
-    }, null, 4);
-};
 
 app.use(logger());
 app.use(koaBody());
@@ -32,9 +25,11 @@ app.use((ctx, next) => {
     return next();
 });
 
-rout.get('/', unknownCommand)
-    .get('/v1/thread/:name', show)
-    .post('/v1/thread/:name/submit', submit);
+rout.get('/', systemInfo)
+    .get('/v1/thread/:name/list', show)
+    .post('/v1/thread/:name/submit', submit)
+    .get('*', unknown);
+
 app.use(rout.routes());
 
 module.exports = (webPort) => {

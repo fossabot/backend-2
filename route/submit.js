@@ -119,7 +119,7 @@ module.exports = async (ctx) => {
                 operatorsAliases: false,
             });
 
-            printLog('debug', 'define table `recent`');
+            printLog('info', 'Adding unread post');
             const unreadContent = Object.assign(content);
             unreadContent.location = ctx.params.name;
             unreadContent.origin_id = create.dataValues.id;
@@ -129,6 +129,7 @@ module.exports = async (ctx) => {
             });
             await unreadPost.create(unreadContent);
 
+            printLog('info', 'Updating counter');
             const thread = seq.define('thread', structThread);
             if (isFirst) {
                 await thread.create({
