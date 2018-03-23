@@ -102,6 +102,8 @@ module.exports = async (ctx) => {
 
     // 客户端处理完毕后，更新评论计数器，增加最近评论
     (async () => {
+        let mailMeta;
+
         printLog('debug', 'Checking post amount');
         const postAmount = Array.from(await Post.findAll({
             where: {
@@ -128,22 +130,28 @@ module.exports = async (ctx) => {
             await unreadPost.create(unreadContent);
 
             const thread = seq.define('thread', structThread);
-            let metaUpdateResult;
             if (isFirst) {
-                metaUpdateResult = await thread.create({
+                await thread.create({
                     name: ctx.params.name,
                     post: postAmount,
                     title: info.title,
                     url: info.url,
                 });
             } else {
-                metaUpdateResult = await thread.update({
+                await thread.update({
                     post: postAmount,
                 }, {
                     where: { name: ctx.params.name },
                 });
             }
-            console.log(metaUpdateResult);
+            if (ctx.userConfig.info.mail) {
+                mailMeta = await thread.find({
+                    attributes: ['title', 'url'],
+                    where: {
+                        name: ctx.params.name,
+                    },
+                });
+            }
         } catch (e) {
             printLog('error', `An error occurred while updating data: ${e}`);
         }
@@ -160,11 +168,11 @@ module.exports = async (ctx) => {
                     }
                 });
             });
-            /* try {
+            try {
                 const mailHtml = fs.readFileSync(path.resolve(ctx.userConfig.basePath, 'mail-template-admin.html'), { encoding: 'utf8' })
                     .replace(/{{ siteTitle }}/g, ctx.userConfig.info.name)
-                    .replace(/{{ articleTitle }}/g, info.title)
-                    .replace(/{{ articleURL }}/g, info.url)
+                    .replace(/{{ articleTitle }}/g, mailMeta.dataValues.title)
+                    .replace(/{{ articleURL }}/g, mailMeta.dataValues.url)
                     .replace(/{{ name }}/g, info.name)
                     .replace(/{{ email }}/g, info.email)
                     .replace(/{{ website }}/g, info.website)
@@ -181,7 +189,7 @@ module.exports = async (ctx) => {
                 });
             } catch (e) {
                 printLog('error', `An error occurred while sending email: ${e}`);
-            } */
+            }
         }
         printLog('info', `All action regarding ${ctx.params.name} done`);
         return true;
