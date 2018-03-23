@@ -7,12 +7,17 @@
     <style type="text/css">
     body {
         margin: 0;
+        margin-top: 8px;
         padding: 0;
         min-width: 100%!important;
     }
     table {
         width: 100%;
         max-width: 600px;
+        border: 1px solid #d1d2d3;
+        -webkit-box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        -moz-box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        box-shadow: 0 0 10px rgba(0,0,0,0.2);
     }
     td {
         padding: 17px;
@@ -25,25 +30,19 @@
     }
     </style>
 </head>
-<body bgcolor="#087f23">
-<table class="title" align="center" cellpadding="0" cellspacing="0" border="0">
+<body bgcolor="#efefef">
+<table align="center" cellpadding="0" cellspacing="0" border="0">
     <tr>
-        <td bgcolor="#80e27e">
+        <td bgcolor="#80e27e" class="title">
             <b>{{ siteTitle }}</b>
         </td>
     </tr>
-</table>
-<table class="content" align="center" cellpadding="0" cellspacing="0" border="0">
     <tr>
         <td bgcolor="#ffffff">{{ name }} 在文章 <a href="{{ articleURL }}">{{ articleTitle }}</a> 下发表了一篇评论：</td>
     </tr>
-</table>
-<table class="content" align="center" cellpadding="0" cellspacing="0" border="0">
     <tr>
         <td bgcolor="#ececec">{{ content }}</td>
     </tr>
-</table>
-<table class="content" align="center" cellpadding="0" cellspacing="0" border="0">
     <tr>
         <td bgcolor="#ffffff">您之所以收到这封邮件，是因为您是本站的管理员。</td>
     </tr>
