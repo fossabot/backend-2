@@ -5,9 +5,9 @@ const isVaildEmail = require('email-validator').validate;
 const htmlToText = require('html-to-text');
 const printLog = require('../lib/log');
 const unHtml = require('../lib/unhtml');
-const updateCounter = require('../lib/update-counter');
-const addUnread = require('../lib/add-unread');
 const structPost = require('../struct/post');
+const structThread = require('../struct/thread');
+const structPostUnread = require('../struct/post-unread');
 
 const isBlank = str => (typeof str === 'undefined' || str === null || str.trim() === '');
 
@@ -111,22 +111,39 @@ module.exports = async (ctx) => {
         })).length;
         printLog('debug', `Post amount: ${postAmount}`);
         try {
-            printLog('info', 'Updating counter');
-            await updateCounter(
-                ctx.userConfig.basePath,
-                ctx.params.name,
-                postAmount,
-                isFirst,
-                info.title,
-                info.url,
-            );
-            printLog('info', 'Updating recent list');
-            await addUnread(
-                ctx.userConfig.basePath,
-                content,
-                ctx.params.name,
-                create.dataValues.id,
-            );
+            const seq = new Sequelize('main', null, null, {
+                dialect: 'sqlite',
+                storage: path.resolve(ctx.userConfig.basePath, 'index.db'),
+                operatorsAliases: false,
+            });
+
+            printLog('debug', 'define table `recent`');
+            const unreadContent = Object.assign(content);
+            unreadContent.location = ctx.params.name;
+            unreadContent.origin_id = create.dataValues.id;
+            const unreadPost = seq.define('recent', structPostUnread, {
+                createdAt: false,
+                updatedAt: false,
+            });
+            await unreadPost.create(unreadContent);
+
+            const thread = seq.define('thread', structThread);
+            let metaUpdateResult;
+            if (isFirst) {
+                metaUpdateResult = await thread.create({
+                    name: ctx.params.name,
+                    post: postAmount,
+                    title: info.title,
+                    url: info.url,
+                });
+            } else {
+                metaUpdateResult = await thread.update({
+                    post: postAmount,
+                }, {
+                    where: { name: ctx.params.name },
+                });
+            }
+            console.log(metaUpdateResult);
         } catch (e) {
             printLog('error', `An error occurred while updating data: ${e}`);
         }
@@ -143,7 +160,7 @@ module.exports = async (ctx) => {
                     }
                 });
             });
-            try {
+            /* try {
                 const mailHtml = fs.readFileSync(path.resolve(ctx.userConfig.basePath, 'mail-template-admin.html'), { encoding: 'utf8' })
                     .replace(/{{ siteTitle }}/g, ctx.userConfig.info.name)
                     .replace(/{{ articleTitle }}/g, info.title)
@@ -164,7 +181,7 @@ module.exports = async (ctx) => {
                 });
             } catch (e) {
                 printLog('error', `An error occurred while sending email: ${e}`);
-            }
+            } */
         }
         printLog('info', `All action regarding ${ctx.params.name} done`);
         return true;
