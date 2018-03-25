@@ -11,6 +11,8 @@ const show = require('./route/show');
 const submit = require('./route/submit');
 const unknown = require('./route/unknown');
 
+const adminShow = require('./route/manage/show');
+
 const app = new Koa();
 let mailTransport;
 let config;
@@ -28,6 +30,7 @@ app.use((ctx, next) => {
 rout.get('/', systemInfo)
     .get('/v1/thread/:name/list', show)
     .post('/v1/thread/:name/submit', submit)
+    .post('/v1/manage/thread/:name/list', adminShow)
     .get('*', unknown);
 
 app.use(rout.routes());
