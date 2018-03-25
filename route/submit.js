@@ -15,6 +15,7 @@ module.exports = async (ctx) => {
     printLog('debug', `Use route handler ${__filename}`);
     ctx.type = 'application/json';
     const info = ctx.request.body;
+    const config = ctx.userConfig.info;
     const absPath = path.resolve(ctx.userConfig.basePath, 'threads', `${ctx.params.name}.db`);
     let isFirst = false;
     let currentError;
@@ -25,11 +26,11 @@ module.exports = async (ctx) => {
     if (isBlank(info.name)) {
         currentError = 'bad name';
     }
-    if (ctx.userConfig.info.requiredInfo.email
+    if (config.requiredInfo.email
         && (isBlank(info.email) || !isVaildEmail(info.email))) {
         currentError = 'bad email';
     }
-    if (ctx.userConfig.info.requiredInfo.website && isBlank(info.website)) {
+    if (config.requiredInfo.website && isBlank(info.website)) {
         currentError = 'bad website';
     }
     if (isBlank(info.content)) {
@@ -42,6 +43,12 @@ module.exports = async (ctx) => {
             fs.copyFileSync(path.resolve(ctx.userConfig.basePath, 'template/thread.db'), absPath);
             isFirst = true;
         }
+    }
+    if (new RegExp(...config.badUserInfo.name).test(info.name)) {
+        currentError = 'disallowed name';
+    }
+    if (new RegExp(...config.badUserInfo.email).test(info.name)) {
+        currentError = 'disallowed email';
     }
 
     // 如果前置检查存在没有通过的项目
@@ -146,7 +153,7 @@ module.exports = async (ctx) => {
                     where: { name: ctx.params.name },
                 });
             }
-            if (ctx.userConfig.info.mail) {
+            if (config.mail) {
                 mailMeta = await thread.find({
                     attributes: ['title', 'url'],
                     where: {
@@ -159,7 +166,7 @@ module.exports = async (ctx) => {
         }
 
         // 发送邮件
-        if (ctx.userConfig.info.mail) {
+        if (config.mail) {
             printLog('info', 'Sending email');
             const sendMail = option => new Promise((resolve, reject) => {
                 ctx.mailTransport.sendMail(option, (err) => {
@@ -172,7 +179,7 @@ module.exports = async (ctx) => {
             });
             try {
                 const mailHtml = fs.readFileSync(path.resolve(ctx.userConfig.basePath, 'mail-template-admin.html'), { encoding: 'utf8' })
-                    .replace(/{{ siteTitle }}/g, ctx.userConfig.info.name)
+                    .replace(/{{ siteTitle }}/g, config.name)
                     .replace(/{{ articleTitle }}/g, mailMeta.dataValues.title)
                     .replace(/{{ articleURL }}/g, mailMeta.dataValues.url)
                     .replace(/{{ name }}/g, info.name)
@@ -183,9 +190,9 @@ module.exports = async (ctx) => {
                     .replace(/{{ userAgent }}/g, ctx.request.header['user-agent']);
 
                 await sendMail({
-                    from: ctx.userConfig.info.senderMail,
-                    to: ctx.userConfig.info.adminMail,
-                    subject: `【${ctx.userConfig.info.name}】您的文章 ${info.title} 有了新的回复`,
+                    from: config.senderMail,
+                    to: config.adminMail,
+                    subject: `【${config.name}】您的文章 ${info.title} 有了新的回复`,
                     text: htmlToText.fromString(mailHtml),
                     html: mailHtml,
                 });

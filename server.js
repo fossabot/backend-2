@@ -23,7 +23,7 @@ app.use(koaBody());
 // 用于传值（设置信息）的中间件
 app.use((ctx, next) => {
     ctx.userConfig = config;
-    ctx.mailTransport = mailTransport;
+    if (config.info.mail) ctx.mailTransport = mailTransport;
     return next();
 });
 
@@ -37,6 +37,6 @@ app.use(rout.routes());
 
 module.exports = (webPort) => {
     config = getConfig(argv._[1]);
-    mailTransport = nodemailer.createTransport(config.info.mail);
+    if (config.info.mail) mailTransport = nodemailer.createTransport(config.info.mail);
     app.listen(webPort);
 };
