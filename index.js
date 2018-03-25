@@ -16,9 +16,9 @@ const showHelp = () => {
 
 Avaliable commands:
 
- - init [PATH]\t\t\tInit a Pomment data directory
- - web [PATH] [-p PORT]\t\tRun the web service. Default port is 3000
- - reset-password [PATH]\tReset admin's password`);
+ - init [PATH]              Init a Pomment data directory
+ - web [PATH] [-p PORT]     Run the web service. Default port is 3000
+ - reset-password [PATH]    Reset admin's password`);
 };
 
 switch (argv._[0]) {
