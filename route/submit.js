@@ -44,11 +44,13 @@ module.exports = async (ctx) => {
             isFirst = true;
         }
     }
-    if (new RegExp(...config.badUserInfo.name).test(info.name)) {
-        currentError = 'disallowed name';
-    }
-    if (new RegExp(...config.badUserInfo.email).test(info.name)) {
-        currentError = 'disallowed email';
+    if (config.badUserInfo) {
+        if (new RegExp(...config.badUserInfo.name).test(info.name)) {
+            currentError = 'disallowed name';
+        }
+        if (new RegExp(...config.badUserInfo.email).test(info.name)) {
+            currentError = 'disallowed email';
+        }
     }
 
     // 如果前置检查存在没有通过的项目
