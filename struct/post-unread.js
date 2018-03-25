@@ -13,4 +13,5 @@ module.exports = {
     birth: { type: Sequelize.DATE(), allowNull: false },
     location: { type: Sequelize.TEXT(), allowNull: false },
     origin_id: { type: Sequelize.INTEGER(), allowNull: false },
+    marked: { type: Sequelize.BOOLEAN(), allowNull: false },
 };

@@ -121,6 +121,7 @@ module.exports = async (ctx) => {
 
             printLog('info', 'Adding unread post');
             const unreadContent = Object.assign(content);
+            unreadContent.marked = false;
             unreadContent.location = ctx.params.name;
             unreadContent.origin_id = create.dataValues.id;
             const unreadPost = seq.define('recent', structPostUnread, {
