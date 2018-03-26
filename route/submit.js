@@ -52,7 +52,9 @@ module.exports = async (ctx) => {
             currentError = 'disallowed email';
         }
     }
-
+    if (fs.existsSync(path.resolve(ctx.userConfig.basePath, 'threads', `${ctx.params.name}.lock`))) {
+        currentError = 'locked';
+    }
     // 如果前置检查存在没有通过的项目
     if (typeof currentError !== 'undefined') {
         ctx.status = 400;
