@@ -2,7 +2,6 @@ const fs = require('fs');
 const path = require('path');
 const auth = require('../../lib/auth');
 const printLog = require('../../lib/log');
-const structPost = require('../../struct/post');
 
 module.exports = async (ctx) => {
     printLog('debug', `Use route handler ${__filename}`);
