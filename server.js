@@ -30,13 +30,14 @@ app.use((ctx, next) => {
     return next();
 });
 
-rout.get('/', systemInfo)
-    .get('/v1/thread/:name/list', show)
+rout.post('/', systemInfo)
+    .post('/v1/thread/:name/list', show)
     .post('/v1/thread/:name/submit', submit)
     .post('/v1/manage/thread/:name/list', adminShow)
     .post('/v1/manage/thread/:name/lock', adminLock)
     .post('/v1/manage/thread/:name/unlock', adminUnlock)
     .post('/v1/manage/thread/:name/delete', adminDelete)
+    .post('*', unknown)
     .get('*', unknown);
 
 app.use(rout.routes());
