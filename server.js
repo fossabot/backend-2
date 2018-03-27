@@ -12,6 +12,8 @@ const submit = require('./route/submit');
 const unknown = require('./route/unknown');
 
 const adminShow = require('./route/manage/show');
+const adminLock = require('./route/manage/lock');
+const adminUnlock = require('./route/manage/unlock');
 
 const app = new Koa();
 let mailTransport;
@@ -31,6 +33,8 @@ rout.get('/', systemInfo)
     .get('/v1/thread/:name/list', show)
     .post('/v1/thread/:name/submit', submit)
     .post('/v1/manage/thread/:name/list', adminShow)
+    .post('/v1/manage/thread/:name/lock', adminLock)
+    .post('/v1/manage/thread/:name/unlock', adminUnlock)
     .get('*', unknown);
 
 app.use(rout.routes());
