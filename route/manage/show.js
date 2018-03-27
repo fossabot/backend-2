@@ -35,6 +35,7 @@ module.exports = async (ctx) => {
         ctx.response.body = JSON.stringify({
             status: 'success',
             name: ctx.params.name,
+            locked: fs.existsSync(path.resolve(ctx.userConfig.basePath, 'threads', `${ctx.params.name}.lock`)),
             content,
         }, null, 4);
     } else {
