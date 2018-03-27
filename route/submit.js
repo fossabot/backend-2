@@ -57,7 +57,7 @@ module.exports = async (ctx) => {
     }
     // 如果前置检查存在没有通过的项目
     if (typeof currentError !== 'undefined') {
-        ctx.status = 400;
+        ctx.status = currentError === 'locked' ? 423 : 400;
         ctx.response.body = JSON.stringify({ status: 'error', info: currentError }, null, 4);
         return false;
     }
