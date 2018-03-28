@@ -3,6 +3,7 @@ const path = require('path');
 const Sequelize = require('sequelize');
 const isVaildEmail = require('email-validator').validate;
 const htmlToText = require('html-to-text');
+const request = require('request');
 const printLog = require('../lib/log');
 const unHtml = require('../lib/unhtml');
 const structPost = require('../struct/post');
@@ -203,6 +204,24 @@ module.exports = async (ctx) => {
             } catch (e) {
                 printLog('error', `An error occurred while sending email: ${e}`);
             }
+        }
+        if (config.webhook) {
+            printLog('info', 'Sending webhook request');
+            request({
+                url: config.webhook,
+                method: 'POST',
+                json: true,
+                headers: {
+                    'content-type': 'application/json',
+                },
+                body: JSON.stringify(content),
+            }, (e, response, body) => {
+                if (!e && response.statusCode === 200) {
+                    printLog('info', `Result: ${body}`);
+                } else {
+                    printLog('error', `An error occurred while sending webhook request: ${e}`);
+                }
+            });
         }
         printLog('info', `All action regarding ${ctx.params.name} done`);
         return true;
