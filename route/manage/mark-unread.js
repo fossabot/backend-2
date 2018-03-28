@@ -24,7 +24,7 @@ module.exports = async (ctx) => {
             createdAt: false,
             updatedAt: false,
         });
-        const content = await unreadPost.destroy({
+        await unreadPost.destroy({
             where: { origin_id: info.id },
         });
 
