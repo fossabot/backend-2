@@ -13,6 +13,7 @@ const unknown = require('./route/unknown');
 
 const adminShow = require('./route/manage/show');
 const adminSetMeta = require('./route/manage/set-meta');
+const adminSetPost = require('./route/manage/set-post');
 const adminLock = require('./route/manage/lock');
 const adminUnlock = require('./route/manage/unlock');
 const adminDelete = require('./route/manage/delete');
@@ -36,6 +37,7 @@ rout.post('/', systemInfo)
     .post('/v1/thread/:name/submit', submit)
     .post('/v1/manage/thread/:name/list', adminShow)
     .post('/v1/manage/thread/:name/setMeta', adminSetMeta)
+    .post('/v1/manage/thread/:name/setPost', adminSetPost)
     .post('/v1/manage/thread/:name/lock', adminLock)
     .post('/v1/manage/thread/:name/unlock', adminUnlock)
     .post('/v1/manage/thread/:name/delete', adminDelete)
