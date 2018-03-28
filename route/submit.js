@@ -4,6 +4,7 @@ const Sequelize = require('sequelize');
 const isVaildEmail = require('email-validator').validate;
 const htmlToText = require('html-to-text');
 const request = require('request');
+const auth = require('../lib/auth');
 const printLog = require('../lib/log');
 const unHtml = require('../lib/unhtml');
 const structPost = require('../struct/post');
@@ -18,6 +19,7 @@ module.exports = async (ctx) => {
     const info = ctx.request.body;
     const config = ctx.userConfig.info;
     const absPath = path.resolve(ctx.userConfig.basePath, 'threads', `${ctx.params.name}.db`);
+    const isAuth = auth(ctx.userConfig.info, info.key);
     let isFirst = false;
     let currentError;
 
@@ -45,7 +47,7 @@ module.exports = async (ctx) => {
             isFirst = true;
         }
     }
-    if (config.badUserInfo) {
+    if (!isAuth && config.badUserInfo) {
         if (new RegExp(...config.badUserInfo.name).test(info.name)) {
             currentError = 'disallowed name';
         }
@@ -53,7 +55,7 @@ module.exports = async (ctx) => {
             currentError = 'disallowed email';
         }
     }
-    if (fs.existsSync(path.resolve(ctx.userConfig.basePath, 'threads', `${ctx.params.name}.lock`))) {
+    if (!isAuth && fs.existsSync(path.resolve(ctx.userConfig.basePath, 'threads', `${ctx.params.name}.lock`))) {
         currentError = 'locked';
     }
     // 如果前置检查存在没有通过的项目
