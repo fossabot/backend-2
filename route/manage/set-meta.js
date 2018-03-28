@@ -35,7 +35,7 @@ module.exports = async (ctx) => {
         }, {
             where: { name: ctx.params.name },
         });
-        ctx.response.body = JSON.stringify({ status: 'success', info: 'thread meta updated' }, null, 4);
+        ctx.response.body = JSON.stringify({ status: 'success' }, null, 4);
         return true;
     } catch (e) {
         printLog('error', `An error occurred while updating the thread meta: ${e}`);

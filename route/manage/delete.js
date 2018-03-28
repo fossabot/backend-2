@@ -12,7 +12,7 @@ module.exports = async (ctx) => {
     const info = ctx.request.body;
     if (!auth(ctx.userConfig.info, info.key)) {
         ctx.status = 401;
-        ctx.response.body = JSON.stringify({status: 'error', info: 'auth failed'}, null, 4);
+        ctx.response.body = JSON.stringify({ status: 'error', info: 'auth failed' }, null, 4);
         return false;
     }
 
@@ -50,7 +50,7 @@ module.exports = async (ctx) => {
         if (fs.existsSync(fileLock)) fs.unlinkSync(fileLock);
 
         // 操作结果
-        ctx.response.body = JSON.stringify({ status: 'success', info: 'thread deleted' }, null, 4);
+        ctx.response.body = JSON.stringify({ status: 'success' }, null, 4);
         return true;
     } catch (e) {
         printLog('error', `An error occurred while deleting the thread: ${e}`);

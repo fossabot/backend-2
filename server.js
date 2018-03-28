@@ -10,7 +10,7 @@ const systemInfo = require('./route/system-info');
 const show = require('./route/show');
 const submit = require('./route/submit');
 const unknown = require('./route/unknown');
-
+const adminListUnread = require('./route/manage/show-unread');
 const adminShow = require('./route/manage/show');
 const adminSetMeta = require('./route/manage/set-meta');
 const adminSetPost = require('./route/manage/set-post');
@@ -35,6 +35,7 @@ app.use((ctx, next) => {
 rout.post('/', systemInfo)
     .post('/v1/thread/:name/list', show)
     .post('/v1/thread/:name/submit', submit)
+    .post('/v1/manage/unread/list', adminListUnread)
     .post('/v1/manage/thread/:name/list', adminShow)
     .post('/v1/manage/thread/:name/setMeta', adminSetMeta)
     .post('/v1/manage/thread/:name/setPost', adminSetPost)

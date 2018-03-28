@@ -18,7 +18,7 @@ module.exports = async (ctx) => {
     if (fs.existsSync(absPath)) {
         try {
             fs.unlinkSync(absPath);
-            ctx.response.body = JSON.stringify({ status: 'success', info: 'thread unlocked' }, null, 4);
+            ctx.response.body = JSON.stringify({ status: 'success' }, null, 4);
         } catch (e) {
             ctx.status = 500;
             ctx.response.body = JSON.stringify({ status: 'error', info: 'unlock thread failed' }, null, 4);
