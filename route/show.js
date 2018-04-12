@@ -57,6 +57,7 @@ module.exports = async (ctx) => {
         ctx.response.body = JSON.stringify({
             status: 'success',
             name: ctx.params.name,
+            locked: false,
             content: {},
         }, null, 4);
     }
