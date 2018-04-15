@@ -5,6 +5,7 @@ const koaBody = require('koa-body');
 const argv = require('minimist')(process.argv.slice(2));
 const nodemailer = require('nodemailer');
 const getConfig = require('./lib/config');
+const printLog = require('./lib/log');
 
 const systemInfo = require('./route/system-info');
 const show = require('./route/show');
@@ -51,7 +52,9 @@ rout.post('/', systemInfo)
 app.use(rout.routes());
 
 module.exports = (webPort) => {
+    const webHost = argv.debug ? '0.0.0.0' : '127.0.0.1';
     config = getConfig(argv._[1]);
     if (config.info.mail) mailTransport = nodemailer.createTransport(config.info.mail);
-    app.listen(webPort, argv.debug ? '0.0.0.0' : '127.0.0.1');
+    app.listen(webPort, webHost);
+    printLog('info', `The HTTP server is http://${webHost}:${webPort}`);
 };

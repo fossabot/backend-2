@@ -34,7 +34,6 @@ case 'web': {
         printLog('warn', 'Running Pomment as root is NOT recommended.');
     }
     server(webPort);
-    printLog('info', `The HTTP server is listening port ${webPort}`);
     break;
 }
 case 'reset-password': {
