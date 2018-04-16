@@ -30,7 +30,11 @@ app.use(koaBody());
 // 用于传值（设置信息）的中间件
 app.use((ctx, next) => {
     ctx.userConfig = config;
-    if (argv.debug) ctx.set('Access-Control-Allow-Origin', '*');
+    if (argv.debug) {
+        ctx.set('Access-Control-Allow-Origin', '*');
+    }
+    ctx.set('Access-Control-Request-Method', 'POST');
+    ctx.set('Access-Control-Allow-Headers', 'Content-Type');
     if (config.info.mail) ctx.mailTransport = mailTransport;
     return next();
 });
@@ -47,7 +51,10 @@ rout.post('/', systemInfo)
     .post('/v1/manage/thread/:name/unlock', adminUnlock)
     .post('/v1/manage/thread/:name/delete', adminDelete)
     .post('*', unknown)
-    .get('*', unknown);
+    .get('*', unknown)
+    .options('*', (ctx) => {
+        ctx.response.body = '';
+    });
 
 app.use(rout.routes());
 
