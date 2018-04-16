@@ -63,4 +63,5 @@ module.exports = async (ctx) => {
             content: {},
         }, null, 4);
     }
+    return true;
 };
