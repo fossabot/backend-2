@@ -94,6 +94,7 @@ module.exports = async (ctx) => {
     let create;
     try {
         create = await Post.create(content);
+        console.log(create);
     } catch (e) {
         printLog('error', `An error occurred while adding the data: ${e}`);
         ctx.status = 500;
@@ -103,6 +104,7 @@ module.exports = async (ctx) => {
     const output = {
         status: 'success',
         content: {
+            id: create.dataValues.id,
             name: info.name,
             email: info.email || '',
             website: info.website || '',
