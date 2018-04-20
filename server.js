@@ -9,6 +9,7 @@ const printLog = require('./lib/log');
 const randChar = require('./lib/randchar');
 const systemInfo = require('./route/system-info');
 const show = require('./route/show');
+const edit = require('./route/edit');
 const submit = require('./route/submit');
 const unknown = require('./route/unknown');
 const adminListUnread = require('./route/manage/show-unread');
@@ -44,6 +45,7 @@ app.use((ctx, next) => {
 rout.post('/', systemInfo)
     .post('/v1/thread/:name/list', show)
     .post('/v1/thread/:name/submit', submit)
+    .post('/v1/thread/:name/edit', edit)
     .post('/v1/manage/unread/list', adminListUnread)
     .post('/v1/manage/unread/mark', adminMarkUnread)
     .post('/v1/manage/thread/:name/list', adminShow)
