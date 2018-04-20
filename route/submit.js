@@ -101,7 +101,7 @@ module.exports = async (ctx) => {
         ctx.response.body = JSON.stringify({ status: 'error', info: 'add comment failed' }, null, 4);
         return false;
     }
-    const editToken = getEditToken(
+    const editToken = config.gusetEditTimeout < 0 ? false : getEditToken(
         info.email,
         ctx.ip,
         ctx.params.name,
