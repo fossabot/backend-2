@@ -34,27 +34,36 @@ module.exports = async (ctx) => {
             createdAt: false,
             updatedAt: false,
         });
-        const verify = await post.find({
-            where: {
-                id: info.id,
-            },
-        });
-        const editToken = config.gusetEditTimeout < 0 ? false : getEditToken(
-            verify.dataValues.email,
-            verify.dataValues.ip,
-            ctx.params.name,
-            verify.dataValues.id,
-            verify.dataValues.birth,
-            ctx.userConfig.salt,
-        );
-        if (!editToken || editToken !== info.token) {
-            ctx.response.body = JSON.stringify({ status: 'error', info: 'bad token' }, null, 4);
-            return false;
-        }
-        if (!verify ||
-            (((new Date().getTime() - verify.dataValues.birth.getTime()) / 1000 >
-            config.gusetEditTimeout) && config.gusetEditTimeout !== 0)) {
-            ctx.response.body = JSON.stringify({ status: 'error', info: 'time expired' }, null, 4);
+        try {
+            const verify = await post.find({
+                where: {
+                    id: info.id,
+                },
+            });
+            const editToken = config.gusetEditTimeout < 0 ? false : getEditToken(
+                verify.dataValues.email,
+                verify.dataValues.ip,
+                ctx.params.name,
+                verify.dataValues.id,
+                verify.dataValues.birth,
+                ctx.userConfig.salt,
+            );
+            const gap = (new Date().getTime() - verify.dataValues.birth.getTime()) / 1000;
+            printLog('debug', `${gap}, ${config.gusetEditTimeout}`);
+            printLog('debug', editToken);
+            if (!editToken || editToken !== info.token) {
+                ctx.status = 401;
+                ctx.response.body = JSON.stringify({ status: 'error', info: 'bad token' }, null, 4);
+                return false;
+            }
+            if (gap > config.gusetEditTimeout && config.gusetEditTimeout !== 0) {
+                ctx.status = 400;
+                ctx.response.body = JSON.stringify({ status: 'error', info: 'time expired' }, null, 4);
+                return false;
+            }
+        } catch (e2) {
+            ctx.status = 400;
+            ctx.response.body = JSON.stringify({ status: 'error', info: 'bad thread' }, null, 4);
             return false;
         }
         await post.update({
