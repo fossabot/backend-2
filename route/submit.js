@@ -5,6 +5,7 @@ const isVaildEmail = require('email-validator').validate;
 const htmlToText = require('html-to-text');
 const request = require('request');
 const auth = require('../lib/auth');
+const getEditToken = require('../lib/get-edit-token');
 const printLog = require('../lib/log');
 const unHtml = require('../lib/unhtml');
 const structPost = require('../struct/post');
@@ -94,13 +95,20 @@ module.exports = async (ctx) => {
     let create;
     try {
         create = await Post.create(content);
-        console.log(create);
     } catch (e) {
         printLog('error', `An error occurred while adding the data: ${e}`);
         ctx.status = 500;
         ctx.response.body = JSON.stringify({ status: 'error', info: 'add comment failed' }, null, 4);
         return false;
     }
+    const editToken = getEditToken(
+        info.email,
+        ctx.ip,
+        ctx.params.name,
+        create.dataValues.id,
+        birth,
+        ctx.userConfig.salt,
+    );
     const output = {
         status: 'success',
         content: {
@@ -112,6 +120,7 @@ module.exports = async (ctx) => {
             content: unHtml(info.content),
             moderated: !ctx.userConfig.moderation,
             birth,
+            editToken,
         },
     };
     ctx.response.body = JSON.stringify(output, null, 4);

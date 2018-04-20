@@ -6,7 +6,7 @@ const argv = require('minimist')(process.argv.slice(2));
 const nodemailer = require('nodemailer');
 const getConfig = require('./lib/config');
 const printLog = require('./lib/log');
-
+const randChar = require('./lib/randchar');
 const systemInfo = require('./route/system-info');
 const show = require('./route/show');
 const submit = require('./route/submit');
@@ -20,6 +20,7 @@ const adminLock = require('./route/manage/lock');
 const adminUnlock = require('./route/manage/unlock');
 const adminDelete = require('./route/manage/delete');
 
+const salt = randChar(32);
 const app = new Koa();
 let mailTransport;
 let config;
@@ -30,6 +31,7 @@ app.use(koaBody());
 // 用于传值（设置信息）的中间件
 app.use((ctx, next) => {
     ctx.userConfig = config;
+    ctx.userConfig.salt = salt;
     if (argv.debug) {
         ctx.set('Access-Control-Allow-Origin', '*');
     }
