@@ -7,7 +7,6 @@ const request = require('request');
 const auth = require('../lib/auth');
 const getEditToken = require('../lib/get-edit-token');
 const printLog = require('../lib/log');
-const unHtml = require('../lib/unhtml');
 const structPost = require('../struct/post');
 const structThread = require('../struct/thread');
 const structPostUnread = require('../struct/post-unread');
@@ -113,11 +112,11 @@ module.exports = async (ctx) => {
         status: 'success',
         content: {
             id: create.dataValues.id,
-            name: unHtml(info.name),
-            email: unHtml(info.email) || '',
-            website: unHtml(info.website) || '',
+            name: info.name,
+            email: info.email || '',
+            website: info.website || '',
             parent: info.parent,
-            content: unHtml(info.content),
+            content: info.content,
             moderated: !ctx.userConfig.moderation,
             birth,
             editToken,
