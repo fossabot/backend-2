@@ -77,7 +77,7 @@ module.exports = async (ctx) => {
         email: info.email || '',
         website: info.website || '',
         parent: info.parent,
-        content: unHtml(info.content),
+        content: info.content,
         moderated: !ctx.userConfig.moderation,
         hidden: false,
         ip: ctx.ip,
