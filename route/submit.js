@@ -113,9 +113,9 @@ module.exports = async (ctx) => {
         status: 'success',
         content: {
             id: create.dataValues.id,
-            name: info.name,
-            email: info.email || '',
-            website: info.website || '',
+            name: unHtml(info.name),
+            email: unHtml(info.email) || '',
+            website: unHtml(info.website) || '',
             parent: info.parent,
             content: unHtml(info.content),
             moderated: !ctx.userConfig.moderation,
