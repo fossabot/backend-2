@@ -60,7 +60,7 @@ module.exports = async (ctx) => {
             name: ctx.params.name,
             locked: false,
             required_info: ctx.userConfig.info.requiredInfo,
-            content: {},
+            content: [],
         }, null, 4);
     }
     return true;
