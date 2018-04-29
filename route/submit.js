@@ -19,6 +19,7 @@ module.exports = async (ctx) => {
     const info = ctx.request.body;
     const config = ctx.userConfig.info;
     const absPath = path.resolve(ctx.userConfig.basePath, 'threads', `${ctx.params.name}.db`);
+    const cdPath = path.resolve(ctx.userConfig.basePath, 'cache/recentIP', ctx.ip);
     const isAuth = auth(ctx.userConfig.info, info.key);
     let isFirst = false;
     let currentError;
@@ -58,13 +59,22 @@ module.exports = async (ctx) => {
     if (!isAuth && fs.existsSync(path.resolve(ctx.userConfig.basePath, 'threads', `${ctx.params.name}.lock`))) {
         currentError = 'locked';
     }
+    if (config.coolDownTimeout >= 0) {
+        if (fs.existsSync(cdPath)) {
+            const lastly = new Date(fs.readFileSync(cdPath)).getTime();
+            const gap = (new Date().getTime() - lastly) / 1000;
+            printLog('debug', `lastly: ${lastly}, gap: ${gap}`);
+            if (gap < config.coolDownTimeout) {
+                currentError = `please wait ${config.coolDownTimeout - gap}`;
+            }
+        }
+    }
     // 如果前置检查存在没有通过的项目
     if (typeof currentError !== 'undefined') {
         ctx.status = currentError === 'locked' ? 423 : 400;
         ctx.response.body = JSON.stringify({ status: 'error', info: currentError }, null, 4);
         return false;
     }
-
     // 数据添加准备
     const sequelize = new Sequelize('main', null, null, {
         dialect: 'sqlite',
@@ -108,6 +118,9 @@ module.exports = async (ctx) => {
         birth,
         ctx.userConfig.salt,
     );
+    if (config.coolDownTimeout >= 0) {
+        fs.writeFileSync(cdPath, new Date().toISOString());
+    }
     const output = {
         status: 'success',
         content: {
