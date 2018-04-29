@@ -65,7 +65,9 @@ module.exports = async (ctx) => {
             const gap = (new Date().getTime() - lastly) / 1000;
             printLog('debug', `lastly: ${lastly}, gap: ${gap}`);
             if (gap < config.coolDownTimeout) {
-                currentError = `please wait ${config.coolDownTimeout - gap}`;
+                ctx.status = 400;
+                ctx.response.body = JSON.stringify({ status: 'error', info: 'please wait', timeLeft: gap }, null, 4);
+                return false;
             }
         }
     }
