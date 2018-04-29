@@ -122,6 +122,7 @@ module.exports = async (ctx) => {
             editToken,
         },
         gusetEditTimeout: config.gusetEditTimeout,
+        coolDownTimeout: config.coolDownTimeout,
     };
     ctx.response.body = JSON.stringify(output, null, 4);
 
