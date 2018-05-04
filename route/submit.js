@@ -66,7 +66,7 @@ module.exports = async (ctx) => {
             printLog('debug', `lastly: ${lastly}, gap: ${gap}`);
             if (gap < config.coolDownTimeout) {
                 ctx.status = 400;
-                ctx.response.body = JSON.stringify({ status: 'error', info: 'please wait', timeLeft: gap }, null, 4);
+                ctx.response.body = JSON.stringify({ status: 'error', info: 'please wait', timePasted: gap }, null, 4);
                 return false;
             }
         }
