@@ -9,12 +9,11 @@ module.exports = async (ctx) => {
     var s = document.createElement('script');
     s.src = '${addEscape(script)}';
     s.onload = function () {
-        var myPomment = new Pomment(
+        new Pomment(
             '${addEscape(element)}',
             '${addEscape(server)}',
             '${addEscape(threadName)}'
-        );
-        myPomment.init();
+        ).init();
     }
     document.body.appendChild(s);
 })();`;
