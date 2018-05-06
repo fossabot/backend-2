@@ -7,6 +7,9 @@ const auth = require('../lib/auth');
 const getEditToken = require('../lib/get-edit-token');
 const printLog = require('../lib/log');
 const webhook = require('../lib/webhook');
+const argv = require('minimist')(process.argv.slice(2));
+const config = require('../lib/config')();
+const target = require('../lib/target-dir')(argv._[1]);
 const structPost = require('../struct/post');
 const structThread = require('../struct/thread');
 const structPostUnread = require('../struct/post-unread');
@@ -17,9 +20,8 @@ module.exports = async (ctx) => {
     printLog('debug', `Use route handler ${__filename}`);
     ctx.type = 'application/json';
     const info = ctx.request.body;
-    const config = ctx.userConfig.info;
-    const absPath = path.resolve(ctx.userConfig.basePath, 'threads', `${ctx.params.name}.db`);
-    const cdPath = path.resolve(ctx.userConfig.basePath, 'cache/recentIP', ctx.ip);
+    const absPath = path.resolve(target, 'threads', `${ctx.params.name}.db`);
+    const cdPath = path.resolve(target, 'cache/recentIP', ctx.ip);
     const isAuth = auth(ctx.userConfig.info, info.key);
     let isFirst = false;
     let currentError;
@@ -44,7 +46,7 @@ module.exports = async (ctx) => {
         if (isBlank(info.title) && isBlank(info.url)) {
             currentError = 'bad article meta';
         } else {
-            fs.copyFileSync(path.resolve(ctx.userConfig.basePath, 'template/thread.db'), absPath);
+            fs.copyFileSync(path.resolve(target, 'template/thread.db'), absPath);
             isFirst = true;
         }
     }
@@ -56,7 +58,7 @@ module.exports = async (ctx) => {
             currentError = 'disallowed email';
         }
     }
-    if (!isAuth && fs.existsSync(path.resolve(ctx.userConfig.basePath, 'threads', `${ctx.params.name}.lock`))) {
+    if (!isAuth && fs.existsSync(path.resolve(target, 'threads', `${ctx.params.name}.lock`))) {
         currentError = 'locked';
     }
     if (config.coolDownTimeout >= 0) {
@@ -156,7 +158,7 @@ module.exports = async (ctx) => {
         try {
             const seq = new Sequelize('main', null, null, {
                 dialect: 'sqlite',
-                storage: path.resolve(ctx.userConfig.basePath, 'index.db'),
+                storage: path.resolve(target, 'index.db'),
                 operatorsAliases: false,
             });
 
@@ -212,7 +214,7 @@ module.exports = async (ctx) => {
                 });
             });
             try {
-                const mailHtml = fs.readFileSync(path.resolve(ctx.userConfig.basePath, 'mail-template-admin.html'), { encoding: 'utf8' })
+                const mailHtml = fs.readFileSync(path.resolve(target, 'mail-template-admin.html'), { encoding: 'utf8' })
                     .replace(/{{ siteTitle }}/g, config.name)
                     .replace(/{{ articleTitle }}/g, mailMeta.dataValues.title)
                     .replace(/{{ articleURL }}/g, mailMeta.dataValues.url)
