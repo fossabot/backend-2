@@ -3,10 +3,10 @@ const path = require('path');
 const Sequelize = require('sequelize');
 const isVaildEmail = require('email-validator').validate;
 const htmlToText = require('html-to-text');
-const request = require('request');
 const auth = require('../lib/auth');
 const getEditToken = require('../lib/get-edit-token');
 const printLog = require('../lib/log');
+const webhook = require('../lib/webhook');
 const structPost = require('../struct/post');
 const structThread = require('../struct/thread');
 const structPostUnread = require('../struct/post-unread');
@@ -234,27 +234,8 @@ module.exports = async (ctx) => {
                 printLog('error', `An error occurred while sending email: ${e}`);
             }
         }
-        if (config.webhook) {
-            printLog('info', 'Sending webhook request');
-            request({
-                url: config.webhook,
-                method: 'POST',
-                json: true,
-                headers: {
-                    'content-type': 'application/json',
-                },
-                body: JSON.stringify({
-                    operation: 'submit',
-                    content,
-                }),
-            }, (e, response, body) => {
-                if (!e && response.statusCode === 200) {
-                    printLog('info', `Result: ${body}`);
-                } else {
-                    printLog('error', `An error occurred while sending webhook request: ${e}`);
-                }
-            });
-        }
+        // 处理 webhook
+        webhook('submit', content);
         printLog('info', `All action regarding ${ctx.params.name} done`);
         return true;
     })();
