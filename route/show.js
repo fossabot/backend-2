@@ -3,13 +3,15 @@ const path = require('path');
 const Sequelize = require('sequelize');
 const crypto = require('crypto');
 const printLog = require('../lib/log');
+const target = require('../lib/base-path')();
+const config = require('../lib/config')();
 const structPost = require('../struct/post');
 
 module.exports = async (ctx) => {
     printLog('debug', `Use route handler ${__filename}`);
     ctx.type = 'application/json';
 
-    const absPath = path.resolve(ctx.userConfig.basePath, 'threads', `${ctx.params.name}.db`);
+    const absPath = path.resolve(target, 'threads', `${ctx.params.name}.db`);
     printLog('debug', `Variable absPath: ${absPath}`);
     if (fs.existsSync(absPath)) {
         try {
@@ -44,8 +46,8 @@ module.exports = async (ctx) => {
             ctx.response.body = JSON.stringify({
                 status: 'success',
                 name: ctx.params.name,
-                locked: fs.existsSync(path.resolve(ctx.userConfig.basePath, 'threads', `${ctx.params.name}.lock`)),
-                required_info: ctx.userConfig.info.requiredInfo,
+                locked: fs.existsSync(path.resolve(target, 'threads', `${ctx.params.name}.lock`)),
+                required_info: config.requiredInfo,
                 content,
             }, null, 4);
         } catch (e) {
@@ -59,7 +61,7 @@ module.exports = async (ctx) => {
             status: 'success',
             name: ctx.params.name,
             locked: false,
-            required_info: ctx.userConfig.info.requiredInfo,
+            required_info: config.requiredInfo,
             content: [],
         }, null, 4);
     }
