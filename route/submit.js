@@ -243,7 +243,10 @@ module.exports = async (ctx) => {
                 headers: {
                     'content-type': 'application/json',
                 },
-                body: JSON.stringify(content),
+                body: JSON.stringify({
+                    operation: 'submit',
+                    content,
+                }),
             }, (e, response, body) => {
                 if (!e && response.statusCode === 200) {
                     printLog('info', `Result: ${body}`);
