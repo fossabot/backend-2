@@ -91,6 +91,8 @@ module.exports = async (ctx) => {
         ip: ctx.ip,
         user_agent: ctx.request.header['user-agent'],
         birth,
+        by_admin: false,
+        receive_email: typeof info.receiveEmail === 'boolean' ? info.receiveEmail : false,
     };
 
     // 添加数据
