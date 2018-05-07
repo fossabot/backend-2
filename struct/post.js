@@ -11,4 +11,6 @@ module.exports = {
     ip: { type: Sequelize.CHAR(48), allowNull: true },
     user_agent: { type: Sequelize.TEXT(), allowNull: true },
     birth: { type: Sequelize.DATE(), allowNull: false },
+    by_admin: { type: Sequelize.BOOLEAN(), allowNull: false },
+    receive_email: { type: Sequelize.BOOLEAN(), allowNull: false },
 };
