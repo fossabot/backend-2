@@ -2,6 +2,8 @@ const path = require('path');
 const Sequelize = require('sequelize');
 const structPost = require('../struct/post');
 const getEditToken = require('../lib/get-edit-token');
+const config = require('../lib/config')();
+const target = require('../lib/base-path')();
 const printLog = require('../lib/log');
 
 const isBlank = str => (typeof str === 'undefined' || str === null || str.trim() === '');
@@ -9,9 +11,8 @@ const isBlank = str => (typeof str === 'undefined' || str === null || str.trim()
 module.exports = async (ctx) => {
     printLog('debug', `Use route handler ${__filename}`);
     ctx.type = 'application/json';
-    const absPath = path.resolve(ctx.userConfig.basePath, 'threads', `${ctx.params.name}.db`);
+    const absPath = path.resolve(target, 'threads', `${ctx.params.name}.db`);
     const info = ctx.request.body;
-    const config = ctx.userConfig.info;
     let currentError;
     if (isBlank(info.content)) {
         currentError = 'bad content';
