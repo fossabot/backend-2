@@ -7,6 +7,7 @@ const auth = require('../lib/auth');
 const getEditToken = require('../lib/get-edit-token');
 const printLog = require('../lib/log');
 const webhook = require('../lib/webhook');
+const toTextHtml = require('../lib/to-text-html');
 const config = require('../lib/config')();
 const target = require('../lib/base-path')();
 const structPost = require('../struct/post');
@@ -220,7 +221,7 @@ module.exports = async (ctx) => {
                     .replace(/{{ name }}/g, info.name)
                     .replace(/{{ email }}/g, info.email)
                     .replace(/{{ website }}/g, info.website)
-                    .replace(/{{ content }}/g, unHtml(info.content))
+                    .replace(/{{ content }}/g, toTextHtml(info.content))
                     .replace(/{{ ip }}/g, ctx.ip)
                     .replace(/{{ userAgent }}/g, ctx.request.header['user-agent']);
 
