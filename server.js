@@ -3,7 +3,6 @@ const logger = require('koa-logger');
 const rout = require('koa-router')();
 const koaBody = require('koa-body');
 const argv = require('minimist')(process.argv.slice(2));
-const nodemailer = require('nodemailer');
 const config = require('./lib/config');
 const printLog = require('./lib/log');
 const randChar = require('./lib/randchar');
@@ -25,7 +24,6 @@ const adminDelete = require('./route/manage/delete');
 
 const salt = randChar(32);
 const app = new Koa();
-let mailTransport;
 
 app.use(logger());
 app.use(koaBody());
@@ -42,7 +40,6 @@ app.use((ctx, next) => {
     }
     ctx.set('Access-Control-Request-Method', 'POST');
     ctx.set('Access-Control-Allow-Headers', 'Content-Type');
-    if (config.mail) ctx.mailTransport = mailTransport;
     return next();
 });
 
@@ -69,7 +66,6 @@ app.use(rout.routes());
 
 module.exports = (webPort) => {
     const webHost = argv.debug ? '0.0.0.0' : '127.0.0.1';
-    if (config.mail) mailTransport = nodemailer.createTransport(config.mail);
     app.listen(webPort, webHost);
     printLog('info', `The HTTP server is http://${webHost}:${webPort}`);
 };

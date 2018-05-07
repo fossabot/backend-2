@@ -3,49 +3,15 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, maximum-scale=1, initial-scale=1" />
-    <title>【{{ siteTitle }}】来自 {{ name }} 的评论</title>
-    <style type="text/css">
-    body {
-        margin: 0;
-        margin-top: 8px;
-        padding: 0;
-        min-width: 100%!important;
-    }
-    table {
-        width: 100%;
-        max-width: 600px;
-        border: 1px solid #d1d2d3;
-        -webkit-box-shadow: 0 0 10px rgba(0,0,0,0.2);
-        -moz-box-shadow: 0 0 10px rgba(0,0,0,0.2);
-        box-shadow: 0 0 10px rgba(0,0,0,0.2);
-    }
-    td {
-        padding: 17px;
-    }
-    .title {
-        font-size: 40px;
-    }
-    .content {
-        line-height: 24px;
-    }
-    </style>
+    <title>[{{siteTitle}}] {{masterName}}, Your post got a reply!</title>
 </head>
-<body bgcolor="#efefef">
-<table align="center" cellpadding="0" cellspacing="0" border="0">
-    <tr>
-        <td bgcolor="#80e27e" class="title">
-            <b>{{ siteTitle }}</b>
-        </td>
-    </tr>
-    <tr>
-        <td bgcolor="#ffffff">{{ name }} 在文章 <a href="{{ articleURL }}">{{ articleTitle }}</a> 下发表了一篇评论：</td>
-    </tr>
-    <tr>
-        <td bgcolor="#ececec">{{ content }}</td>
-    </tr>
-    <tr>
-        <td bgcolor="#ffffff">您之所以收到这封邮件，是因为您是本站的管理员。</td>
-    </tr>
-</table>
+<body>
+<p>Hey <b>{{masterName}}</b>, Your post got a reply from <b>{{name}}</b>.</p>
+<hr>
+<p><b>{{name}}</b> said:</p>
+<div>{{content}}</div>
+<hr>
+<p>You can check out the reply <a href="{{threadURL}}" target="_blank">here</a>, or just copy the following URL into your browser: {{threadURL}}</p>
+<p>This E-mail was sent automaticlly.</p>
 </body>
 </html>

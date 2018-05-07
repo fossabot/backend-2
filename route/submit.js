@@ -2,11 +2,10 @@ const fs = require('fs-extra');
 const path = require('path');
 const Sequelize = require('sequelize');
 const isVaildEmail = require('email-validator').validate;
-const htmlToText = require('html-to-text');
 const getEditToken = require('../lib/get-edit-token');
 const printLog = require('../lib/log');
 const webhook = require('../lib/webhook');
-const toTextHtml = require('../lib/to-text-html');
+const sendMail = require('../lib/send-mail');
 const config = require('../lib/config');
 const target = require('../lib/base-path');
 const structPost = require('../struct/post');
@@ -140,8 +139,6 @@ module.exports = async (ctx) => {
 
     // 客户端处理完毕后，更新评论计数器，增加最近评论
     (async () => {
-        let mailMeta;
-
         printLog('debug', 'Checking post amount');
         const postAmount = Array.from(await Post.findAll({
             where: {
@@ -156,7 +153,6 @@ module.exports = async (ctx) => {
                 storage: path.resolve(target, 'index.db'),
                 operatorsAliases: false,
             });
-
             printLog('info', 'Adding unread post');
             const unreadContent = Object.assign(content);
             unreadContent.marked = false;
@@ -167,7 +163,6 @@ module.exports = async (ctx) => {
                 updatedAt: false,
             });
             await unreadPost.create(unreadContent);
-
             printLog('info', 'Updating counter');
             const thread = seq.define('thread', structThread);
             if (isFirst) {
@@ -184,55 +179,30 @@ module.exports = async (ctx) => {
                     where: { name: ctx.params.name },
                 });
             }
-            if (config.mail) {
-                mailMeta = await thread.find({
-                    attributes: ['title', 'url'],
-                    where: {
-                        name: ctx.params.name,
-                    },
-                });
-            }
         } catch (e) {
             printLog('error', `An error occurred while updating data: ${e}`);
         }
-
         // 发送邮件
         if (config.mail) {
-            printLog('info', 'Sending email');
-            const sendMail = option => new Promise((resolve, reject) => {
-                ctx.mailTransport.sendMail(option, (err) => {
-                    if (err) {
-                        reject(err);
-                    } else {
-                        resolve();
-                    }
-                });
-            });
+            printLog('info', 'Sending E-mail');
             try {
-                const mailHtml = fs.readFileSync(path.resolve(target, 'mail-template-admin.html'), { encoding: 'utf8' })
-                    .replace(/{{ siteTitle }}/g, config.name)
-                    .replace(/{{ articleTitle }}/g, mailMeta.dataValues.title)
-                    .replace(/{{ articleURL }}/g, mailMeta.dataValues.url)
-                    .replace(/{{ name }}/g, info.name)
-                    .replace(/{{ email }}/g, info.email)
-                    .replace(/{{ website }}/g, info.website)
-                    .replace(/{{ content }}/g, toTextHtml(info.content))
-                    .replace(/{{ ip }}/g, ctx.ip)
-                    .replace(/{{ userAgent }}/g, ctx.request.header['user-agent']);
-
                 await sendMail({
-                    from: config.senderMail,
-                    to: config.adminMail,
-                    subject: `【${config.name}】您的文章 ${info.title} 有了新的回复`,
-                    text: htmlToText.fromString(mailHtml),
-                    html: mailHtml,
+                    to: '',
+                    subject: '',
+                    text: '',
+                    html: '',
                 });
             } catch (e) {
-                printLog('error', `An error occurred while sending email: ${e}`);
+                printLog('error', `An error occurred while sending E-mail: ${e}`);
             }
         }
         // 处理 webhook
-        webhook('submit', content);
+        printLog('info', 'Sending webhook request');
+        try {
+            await webhook('submit', content);
+        } catch (e) {
+            printLog('error', `An error occurred while sending webhook request: ${e}`);
+        }
         printLog('info', `All action regarding ${ctx.params.name} done`);
         return true;
     })();
