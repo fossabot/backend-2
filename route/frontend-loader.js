@@ -1,7 +1,8 @@
+const config = require('../lib/config');
+
 const addEscape = target => target.split("'").join("\\'");
 
 module.exports = async (ctx) => {
-    const config = ctx.userConfig.info;
     const { script, element, server } = config.frontendLoader;
     const threadName = ctx.params.name;
     ctx.type = 'text/javascript';

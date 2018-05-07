@@ -2,18 +2,19 @@ const fs = require('fs');
 const path = require('path');
 const auth = require('../../lib/auth');
 const printLog = require('../../lib/log');
+const target = require('../../lib/base-path');
 
 module.exports = async (ctx) => {
     printLog('debug', `Use route handler ${__filename}`);
     ctx.type = 'application/json';
     const info = ctx.request.body;
-    if (!auth(ctx.userConfig.info, info.key)) {
+    if (!auth(info.key)) {
         ctx.status = 401;
         ctx.response.body = JSON.stringify({ status: 'error', info: 'auth failed' }, null, 4);
         return false;
     }
 
-    const absPath = path.resolve(ctx.userConfig.basePath, 'threads', `${ctx.params.name}.lock`);
+    const absPath = path.resolve(target, 'threads', `${ctx.params.name}.lock`);
     printLog('debug', `Variable absPath: ${absPath}`);
     if (fs.existsSync(absPath)) {
         try {

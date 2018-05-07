@@ -2,8 +2,8 @@ const path = require('path');
 const Sequelize = require('sequelize');
 const structPost = require('../struct/post');
 const getEditToken = require('../lib/get-edit-token');
-const config = require('../lib/config')();
-const target = require('../lib/base-path')();
+const config = require('../lib/config');
+const target = require('../lib/base-path');
 const printLog = require('../lib/log');
 
 const isBlank = str => (typeof str === 'undefined' || str === null || str.trim() === '');
@@ -47,7 +47,7 @@ module.exports = async (ctx) => {
                 ctx.params.name,
                 verify.dataValues.id,
                 verify.dataValues.birth,
-                ctx.userConfig.salt,
+                config.salt,
             );
             const gap = (new Date().getTime() - verify.dataValues.birth.getTime()) / 1000;
             printLog('debug', `${gap}, ${config.gusetEditTimeout}`);

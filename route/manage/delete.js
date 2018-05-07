@@ -5,12 +5,13 @@ const structThread = require('../../struct/thread');
 const structPostUnread = require('../../struct/post-unread');
 const auth = require('../../lib/auth');
 const printLog = require('../../lib/log');
+const target = require('../../lib/base-path');
 
 module.exports = async (ctx) => {
     printLog('debug', `Use route handler ${__filename}`);
     ctx.type = 'application/json';
     const info = ctx.request.body;
-    if (!auth(ctx.userConfig.info, info.key)) {
+    if (!auth(info.key)) {
         ctx.status = 401;
         ctx.response.body = JSON.stringify({ status: 'error', info: 'auth failed' }, null, 4);
         return false;
@@ -20,7 +21,7 @@ module.exports = async (ctx) => {
         // 删除索引记录
         const seqList = new Sequelize('main', null, null, {
             dialect: 'sqlite',
-            storage: path.resolve(ctx.userConfig.basePath, 'index.db'),
+            storage: path.resolve(target, 'index.db'),
             operatorsAliases: false,
         });
         const thread = seqList.define('thread', structThread);
@@ -44,8 +45,8 @@ module.exports = async (ctx) => {
         });
 
         // 删除文件
-        const fileData = path.resolve(ctx.userConfig.basePath, 'threads', `${ctx.params.name}.db`);
-        const fileLock = path.resolve(ctx.userConfig.basePath, 'threads', `${ctx.params.name}.lock`);
+        const fileData = path.resolve(target, 'threads', `${ctx.params.name}.db`);
+        const fileLock = path.resolve(target, 'threads', `${ctx.params.name}.lock`);
         if (fs.existsSync(fileData)) fs.unlinkSync(fileData);
         if (fs.existsSync(fileLock)) fs.unlinkSync(fileLock);
 

@@ -3,13 +3,12 @@ const path = require('path');
 const Sequelize = require('sequelize');
 const isVaildEmail = require('email-validator').validate;
 const htmlToText = require('html-to-text');
-const auth = require('../lib/auth');
 const getEditToken = require('../lib/get-edit-token');
 const printLog = require('../lib/log');
 const webhook = require('../lib/webhook');
 const toTextHtml = require('../lib/to-text-html');
-const config = require('../lib/config')();
-const target = require('../lib/base-path')();
+const config = require('../lib/config');
+const target = require('../lib/base-path');
 const structPost = require('../struct/post');
 const structThread = require('../struct/thread');
 const structPostUnread = require('../struct/post-unread');
@@ -22,7 +21,6 @@ module.exports = async (ctx) => {
     const info = ctx.request.body;
     const absPath = path.resolve(target, 'threads', `${ctx.params.name}.db`);
     const cdPath = path.resolve(target, 'cache/recentIP', ctx.ip);
-    const isAuth = auth(ctx.userConfig.info, info.key);
     let isFirst = false;
     let currentError;
 
@@ -50,16 +48,13 @@ module.exports = async (ctx) => {
             isFirst = true;
         }
     }
-    if (!isAuth && config.badUserInfo) {
+    if (config.badUserInfo) {
         if (new RegExp(...config.badUserInfo.name).test(info.name)) {
             currentError = 'disallowed name';
         }
         if (new RegExp(...config.badUserInfo.email).test(info.name)) {
             currentError = 'disallowed email';
         }
-    }
-    if (!isAuth && fs.existsSync(path.resolve(target, 'threads', `${ctx.params.name}.lock`))) {
-        currentError = 'locked';
     }
     if (config.coolDownTimeout >= 0) {
         if (fs.existsSync(cdPath)) {
@@ -92,7 +87,7 @@ module.exports = async (ctx) => {
         website: info.website || '',
         parent: info.parent,
         content: info.content,
-        moderated: !ctx.userConfig.moderation,
+        moderated: !config.moderation,
         hidden: false,
         ip: ctx.ip,
         user_agent: ctx.request.header['user-agent'],
@@ -134,7 +129,7 @@ module.exports = async (ctx) => {
             website: info.website || '',
             parent: info.parent,
             content: info.content,
-            moderated: !ctx.userConfig.moderation,
+            moderated: !config.moderation,
             birth,
             editToken,
         },

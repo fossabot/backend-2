@@ -4,18 +4,19 @@ const Sequelize = require('sequelize');
 const auth = require('../../lib/auth');
 const printLog = require('../../lib/log');
 const structPost = require('../../struct/post');
+const target = require('../../lib/base-path');
 
 module.exports = async (ctx) => {
     printLog('debug', `Use route handler ${__filename}`);
     ctx.type = 'application/json';
     const info = ctx.request.body;
-    if (!auth(ctx.userConfig.info, info.key)) {
+    if (!auth(info.key)) {
         ctx.status = 401;
         ctx.response.body = JSON.stringify({ status: 'error', info: 'auth failed' }, null, 4);
         return false;
     }
 
-    const absPath = path.resolve(ctx.userConfig.basePath, 'threads', `${ctx.params.name}.db`);
+    const absPath = path.resolve(target, 'threads', `${ctx.params.name}.db`);
     printLog('debug', `Variable absPath: ${absPath}`);
     if (fs.existsSync(absPath)) {
         try {
@@ -36,7 +37,7 @@ module.exports = async (ctx) => {
             ctx.response.body = JSON.stringify({
                 status: 'success',
                 name: ctx.params.name,
-                locked: fs.existsSync(path.resolve(ctx.userConfig.basePath, 'threads', `${ctx.params.name}.lock`)),
+                locked: fs.existsSync(path.resolve(target, 'threads', `${ctx.params.name}.lock`)),
                 content,
             }, null, 4);
         } catch (e) {

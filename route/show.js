@@ -3,8 +3,8 @@ const path = require('path');
 const Sequelize = require('sequelize');
 const crypto = require('crypto');
 const printLog = require('../lib/log');
-const target = require('../lib/base-path')();
-const config = require('../lib/config')();
+const target = require('../lib/base-path');
+const config = require('../lib/config');
 const structPost = require('../struct/post');
 
 module.exports = async (ctx) => {
