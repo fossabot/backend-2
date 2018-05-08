@@ -39,4 +39,4 @@ module.exports = async (ctx) => {
         return false;
     }
     return true;
-}
+};
