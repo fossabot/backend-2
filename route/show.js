@@ -27,7 +27,7 @@ module.exports = async (ctx) => {
             });
             const content = [];
             const tmpContent = await Post.findAll({
-                attributes: ['id', 'name', 'email', 'website', 'parent', 'birth', 'content'],
+                attributes: ['id', 'name', 'email', 'website', 'parent', 'birth', 'content', 'by_admin'],
                 where: {
                     moderated: true,
                     hidden: false,
