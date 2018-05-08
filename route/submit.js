@@ -92,7 +92,7 @@ module.exports = async (ctx) => {
         user_agent: ctx.request.header['user-agent'],
         birth,
         by_admin: false,
-        receive_email: typeof info.receiveEmail === 'boolean' ? info.receiveEmail : false,
+        receive_email: typeof info.receiveEmail === 'boolean' ? info.receiveEmail : true,
     };
 
     // 添加数据
