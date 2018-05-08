@@ -199,11 +199,13 @@ module.exports = async (ctx) => {
             }
         }
         // 处理 webhook
-        printLog('info', 'Sending webhook request');
-        try {
-            await webhook('submit', content);
-        } catch (e) {
-            printLog('error', `An error occurred while sending webhook request: ${e}`);
+        if (config.webhook) {
+            printLog('info', 'Sending webhook request');
+            try {
+                await webhook('submit', content);
+            } catch (e) {
+                printLog('error', `An error occurred while sending webhook request: ${e}`);
+            }
         }
         printLog('info', `All action regarding ${ctx.params.name} done`);
         return true;
