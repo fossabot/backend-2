@@ -48,7 +48,7 @@ module.exports = async (ctx) => {
                 verify.dataValues.id,
                 verify.dataValues.birth,
                 ctx.userConfig.salt,
-            );
+            ).digest('hex');
             const gap = (new Date().getTime() - verify.dataValues.birth.getTime()) / 1000;
             printLog('debug', `${gap}, ${config.gusetEditTimeout}`);
             printLog('debug', editToken);

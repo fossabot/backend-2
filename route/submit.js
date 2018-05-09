@@ -92,7 +92,7 @@ module.exports = async (ctx) => {
         user_agent: ctx.request.header['user-agent'],
         birth,
         by_admin: false,
-        receive_email: typeof info.receiveEmail === 'boolean' ? info.receiveEmail : true,
+        receive_email: info.receiveEmail,
     };
 
     // 添加数据
@@ -117,7 +117,7 @@ module.exports = async (ctx) => {
         create.dataValues.id,
         birth,
         ctx.userConfig.salt,
-    );
+    ).digest('hex');
     if (config.coolDownTimeout >= 0) {
         fs.writeFileSync(cdPath, new Date().toISOString());
     }
