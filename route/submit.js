@@ -156,7 +156,7 @@ module.exports = async (ctx) => {
                 operatorsAliases: false,
             });
             printLog('info', 'Adding unread post');
-            const unreadContent = Object.assign(content);
+            const unreadContent = Object.assign({}, content);
             unreadContent.marked = false;
             unreadContent.location = ctx.params.name;
             unreadContent.origin_id = create.dataValues.id;
@@ -186,7 +186,7 @@ module.exports = async (ctx) => {
         }
         // 发送邮件
         if (config.mail) {
-            printLog('info', 'Sending E-mail');
+            printLog('info', 'Sending email');
             try {
                 await sendMail({
                     to: '',
