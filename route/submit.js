@@ -185,11 +185,19 @@ module.exports = async (ctx) => {
             printLog('error', `An error occurred while updating data: ${e}`);
         }
         // 发送邮件
-        if (config.mail) {
+        if (!config.mail.enabled && info.parent >= 0) {
             printLog('info', 'Sending email');
             try {
+                const { email } = await Post.find({
+                    attributes: ['email'],
+                    where: {
+                        moderated: true,
+                        hidden: false,
+                        id: info.parent,
+                    },
+                });
                 await sendMail({
-                    to: '',
+                    to: email,
                     subject: '',
                     text: '',
                     html: '',
