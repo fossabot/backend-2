@@ -43,7 +43,7 @@ module.exports = async (ctx) => {
         if (isBlank(info.title) && isBlank(info.url)) {
             currentError = 'bad article meta';
         } else {
-            fs.copyFileSync(path.resolve(target, 'template/thread.db'), absPath);
+            fs.copyFileSync(path.resolve(target, 'template/system/thread.db'), absPath);
             isFirst = true;
         }
     }
