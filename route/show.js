@@ -47,7 +47,7 @@ module.exports = async (ctx) => {
                 status: 'success',
                 name: ctx.params.name,
                 locked: fs.existsSync(path.resolve(target, 'threads', `${ctx.params.name}.lock`)),
-                required_info: config.requiredInfo,
+                required_info: config.common.requiredInfo,
                 content,
             }, null, 4);
         } catch (e) {
@@ -61,7 +61,7 @@ module.exports = async (ctx) => {
             status: 'success',
             name: ctx.params.name,
             locked: false,
-            required_info: config.requiredInfo,
+            required_info: config.common.requiredInfo,
             content: [],
         }, null, 4);
     }

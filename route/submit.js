@@ -29,11 +29,11 @@ module.exports = async (ctx) => {
     if (isBlank(info.name)) {
         currentError = 'bad name';
     }
-    if (config.requiredInfo.email
+    if (config.common.requiredInfo.email
         && (isBlank(info.email) || !isVaildEmail(info.email))) {
         currentError = 'bad email';
     }
-    if (config.requiredInfo.website && isBlank(info.website)) {
+    if (config.common.requiredInfo.website && isBlank(info.website)) {
         currentError = 'bad website';
     }
     if (isBlank(info.content)) {
@@ -47,22 +47,22 @@ module.exports = async (ctx) => {
             isFirst = true;
         }
     }
-    if (config.badUserInfo) {
-        if (new RegExp(...config.badUserInfo.name).test(info.name)) {
+    if (config.guard.badUserInfo) {
+        if (new RegExp(...config.guard.badUserInfo.name).test(info.name)) {
             currentError = 'disallowed name';
         }
-        if (new RegExp(...config.badUserInfo.email).test(info.name)) {
+        if (new RegExp(...config.guard.badUserInfo.email).test(info.name)) {
             currentError = 'disallowed email';
         }
     }
-    if (config.coolDownTimeout >= 0) {
+    if (config.guard.coolDownTimeout >= 0) {
         if (fs.existsSync(cdPath)) {
             const lastly = new Date(fs.readFileSync(cdPath)).getTime();
             const gap = (new Date().getTime() - lastly) / 1000;
             printLog('debug', `lastly: ${lastly}, gap: ${gap}`);
-            if (gap < config.coolDownTimeout) {
+            if (gap < config.guard.coolDownTimeout) {
                 ctx.status = 400;
-                ctx.response.body = JSON.stringify({ status: 'error', info: 'please wait', timeLeft: config.coolDownTimeout - gap }, null, 4);
+                ctx.response.body = JSON.stringify({ status: 'error', info: 'please wait', timeLeft: config.guard.coolDownTimeout - gap }, null, 4);
                 return false;
             }
         }
@@ -86,7 +86,7 @@ module.exports = async (ctx) => {
         website: info.website || '',
         parent: info.parent,
         content: info.content,
-        moderated: !config.moderation,
+        moderated: !config.common.moderation,
         hidden: false,
         ip: ctx.ip,
         user_agent: ctx.request.header['user-agent'],
@@ -110,7 +110,7 @@ module.exports = async (ctx) => {
         ctx.response.body = JSON.stringify({ status: 'error', info: 'add comment failed' }, null, 4);
         return false;
     }
-    const editToken = config.gusetEditTimeout < 0 ? false : getEditToken(
+    const editToken = config.guard.gusetEditTimeout < 0 ? false : getEditToken(
         info.email,
         ctx.ip,
         ctx.params.name,
@@ -118,7 +118,7 @@ module.exports = async (ctx) => {
         birth,
         ctx.userConfig.salt,
     ).digest('hex');
-    if (config.coolDownTimeout >= 0) {
+    if (config.guard.coolDownTimeout >= 0) {
         fs.writeFileSync(cdPath, new Date().toISOString());
     }
     const output = {
@@ -130,12 +130,12 @@ module.exports = async (ctx) => {
             website: info.website || '',
             parent: info.parent,
             content: info.content,
-            moderated: !config.moderation,
+            moderated: !config.common.moderation,
             birth,
             editToken,
         },
-        gusetEditTimeout: config.gusetEditTimeout,
-        coolDownTimeout: config.coolDownTimeout,
+        gusetEditTimeout: config.guard.gusetEditTimeout,
+        coolDownTimeout: config.guard.coolDownTimeout,
     };
     ctx.response.body = JSON.stringify(output, null, 4);
 
@@ -185,7 +185,7 @@ module.exports = async (ctx) => {
             printLog('error', `An error occurred while updating data: ${e}`);
         }
         // 发送邮件
-        if (!config.mail.enabled && info.parent >= 0) {
+        if (!config.email.enabled && info.parent >= 0) {
             printLog('info', 'Sending email');
             try {
                 const { email } = await Post.find({
@@ -207,7 +207,7 @@ module.exports = async (ctx) => {
             }
         }
         // 处理 webhook
-        if (config.webhook) {
+        if (config.common.webhook) {
             printLog('info', 'Sending webhook request');
             try {
                 await webhook('submit', content);

@@ -3,7 +3,7 @@ const config = require('../lib/config');
 const addEscape = target => target.split("'").join("\\'");
 
 module.exports = async (ctx) => {
-    const { script, element, server } = config.frontendLoader;
+    const { script, element, server } = config.common.frontendLoader;
     const threadName = ctx.params.name;
     ctx.type = 'text/javascript';
     ctx.response.body = `(function () {

@@ -3,7 +3,6 @@ const logger = require('koa-logger');
 const rout = require('koa-router')();
 const koaBody = require('koa-body');
 const argv = require('minimist')(process.argv.slice(2));
-const config = require('./lib/config');
 const printLog = require('./lib/log');
 const randChar = require('./lib/randchar');
 const targetHelper = require('./lib/target-dir');
@@ -31,7 +30,6 @@ app.use(koaBody());
 // 用于传值（设置信息）的中间件
 app.use((ctx, next) => {
     ctx.userConfig = {
-        info: config,
         basePath: targetHelper(argv._[1]),
         salt,
     };

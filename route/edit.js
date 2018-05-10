@@ -17,7 +17,7 @@ module.exports = async (ctx) => {
     if (isBlank(info.content)) {
         currentError = 'bad content';
     }
-    if (config.gusetEditTimeout < 0) {
+    if (config.guard.gusetEditTimeout < 0) {
         currentError = 'guest edit is disabled';
     }
     if (typeof currentError !== 'undefined') {
@@ -41,7 +41,7 @@ module.exports = async (ctx) => {
                     id: info.id,
                 },
             });
-            const editToken = config.gusetEditTimeout < 0 ? false : getEditToken(
+            const editToken = config.guard.gusetEditTimeout < 0 ? false : getEditToken(
                 verify.dataValues.email,
                 verify.dataValues.ip,
                 ctx.params.name,
@@ -50,14 +50,14 @@ module.exports = async (ctx) => {
                 ctx.userConfig.salt,
             ).digest('hex');
             const gap = (new Date().getTime() - verify.dataValues.birth.getTime()) / 1000;
-            printLog('debug', `${gap}, ${config.gusetEditTimeout}`);
+            printLog('debug', `${gap}, ${config.guard.gusetEditTimeout}`);
             printLog('debug', editToken);
             if (!editToken || editToken !== info.token) {
                 ctx.status = 401;
                 ctx.response.body = JSON.stringify({ status: 'error', info: 'bad token' }, null, 4);
                 return false;
             }
-            if (gap > config.gusetEditTimeout && config.gusetEditTimeout !== 0) {
+            if (gap > config.guard.gusetEditTimeout && config.guard.gusetEditTimeout !== 0) {
                 ctx.status = 400;
                 ctx.response.body = JSON.stringify({ status: 'error', info: 'time expired' }, null, 4);
                 return false;

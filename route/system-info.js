@@ -4,6 +4,6 @@ module.exports = async (ctx) => {
     ctx.response.body = JSON.stringify({
         status: 'success',
         api_version: 1,
-        required_info: config.requiredInfo,
+        required_info: config.common.requiredInfo,
     }, null, 4);
 };
