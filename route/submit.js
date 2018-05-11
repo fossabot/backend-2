@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const fs = require('fs-extra');
 const path = require('path');
 const Sequelize = require('sequelize');
@@ -8,6 +9,7 @@ const webhook = require('../lib/webhook');
 const sendMail = require('../lib/send-mail');
 const config = require('../lib/config');
 const target = require('../lib/base-path');
+const rendTemplate = require('../lib/rend-template');
 const structPost = require('../struct/post');
 const structThread = require('../struct/thread');
 const structPostUnread = require('../struct/post-unread');
@@ -153,6 +155,7 @@ module.exports = async (ctx) => {
                 hidden: false,
             },
         })).length;
+        const thread = seq.define('thread', structThread);
         printLog('debug', `Post amount: ${postAmount}`);
         try {
             printLog('info', 'Adding unread post');
@@ -166,7 +169,6 @@ module.exports = async (ctx) => {
             });
             await unreadPost.create(unreadContent);
             printLog('info', 'Updating counter');
-            const thread = seq.define('thread', structThread);
             if (isFirst) {
                 await thread.create({
                     name: ctx.params.name,
@@ -188,7 +190,7 @@ module.exports = async (ctx) => {
         if (!config.email.enabled && info.parent >= 0) {
             printLog('info', 'Sending email');
             try {
-                const { email } = await Post.find({
+                const parent = await Post.find({
                     attributes: ['email'],
                     where: {
                         moderated: true,
@@ -196,11 +198,25 @@ module.exports = async (ctx) => {
                         id: info.parent,
                     },
                 });
+                const threadMeta = await thread.find({
+                    where: {
+                        name: ctx.params.name,
+                    },
+                });
+                const templateData = {
+                    siteTitle: _.escape(config.common.siteTitle),
+                    masterName: _.escape(parent.name),
+                    url: _.escape(threadMeta.url),
+                    title: _.escape(threadMeta.title),
+                    name: _.escape(config.common.admin.username),
+                    content: _.escape(content.content).replace(/\n/gm, '<br>'),
+                };
+                const mailContent = rendTemplate(fs.readFileSync(path.resolve(target, 'template/mail-reply.html')), templateData);
                 await sendMail({
-                    to: email,
-                    subject: '',
-                    text: '',
-                    html: '',
+                    to: parent.email,
+                    subject: rendTemplate(config.email.replyTitle, templateData),
+                    // text: '',
+                    html: mailContent,
                 });
             } catch (e) {
                 printLog('error', `An error occurred while sending E-mail: ${e}`);
@@ -210,7 +226,6 @@ module.exports = async (ctx) => {
         if (config.common.webhook) {
             printLog('info', 'Sending webhook request');
             try {
-                const thread = seq.define('thread', structThread);
                 const thre = await thread.find({
                     where: {
                         name: ctx.params.name,
