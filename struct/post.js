@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize');
 
 module.exports = {
-    name: { type: Sequelize.STRING(128), allowNull: false },
+    name: { type: Sequelize.STRING(128), allowNull: true },
     email: { type: Sequelize.STRING(255), allowNull: true },
     website: { type: Sequelize.TEXT(), allowNull: true },
     parent: { type: Sequelize.INTEGER(), allowNull: true },
