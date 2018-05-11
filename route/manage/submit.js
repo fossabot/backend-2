@@ -18,6 +18,11 @@ module.exports = async (ctx) => {
     ctx.type = 'application/json';
     const info = ctx.request.body;
     const absPath = path.resolve(target, 'threads', `${ctx.params.name}.db`);
+    const seq = new Sequelize('main', null, null, {
+        dialect: 'sqlite',
+        storage: path.resolve(target, 'index.db'),
+        operatorsAliases: false,
+    });
     let isFirst = false;
     let currentError;
     if (!auth(info.key)) {
@@ -103,11 +108,6 @@ module.exports = async (ctx) => {
         })).length;
         printLog('debug', `Post amount: ${postAmount}`);
         try {
-            const seq = new Sequelize('main', null, null, {
-                dialect: 'sqlite',
-                storage: path.resolve(target, 'index.db'),
-                operatorsAliases: false,
-            });
             printLog('info', 'Adding unread post');
             const unreadContent = Object.assign({}, content);
             unreadContent.marked = false;
@@ -163,12 +163,18 @@ module.exports = async (ctx) => {
         if (config.common.webhook) {
             printLog('info', 'Sending webhook request');
             try {
+                const thread = seq.define('thread', structThread);
+                const thre = await thread.find({
+                    where: {
+                        name: ctx.params.name,
+                    },
+                });
                 const cont = await Post.find({
                     where: {
                         id: create.dataValues.id,
                     },
                 });
-                await webhook('submit', cont);
+                await webhook('submit', thre, cont);
             } catch (e) {
                 printLog('error', `An error occurred while sending webhook request: ${e}`);
             }
