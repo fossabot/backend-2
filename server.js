@@ -57,7 +57,7 @@ rout.post('/', systemInfo)
     .post('/v1/manage/thread/:name/unlock', adminUnlock)
     .post('/v1/manage/thread/:name/delete', adminDelete)
     .post('/v1/manage/thread/:name/submit', adminSubmit)
-    .post('/v1/manage/thread/:name/get-single/:id', adminGetSingle)
+    .post('/v1/manage/thread/:name/get-single', adminGetSingle)
     .post('*', unknown)
     .get('*', unknown)
     .options('*', (ctx) => {

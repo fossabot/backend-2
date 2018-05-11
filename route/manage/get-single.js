@@ -31,7 +31,7 @@ module.exports = async (ctx) => {
                 updatedAt: false,
             });
             const content = await Post.find({
-                where: ctx.params.id,
+                where: info.id,
             });
 
             ctx.response.body = JSON.stringify({
