@@ -210,7 +210,12 @@ module.exports = async (ctx) => {
         if (config.common.webhook) {
             printLog('info', 'Sending webhook request');
             try {
-                await webhook('submit', content);
+                const cont = await Post.find({
+                    where: {
+                        id: create.dataValues.id,
+                    },
+                });
+                await webhook('submit', cont);
             } catch (e) {
                 printLog('error', `An error occurred while sending webhook request: ${e}`);
             }
