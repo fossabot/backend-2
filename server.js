@@ -20,6 +20,8 @@ const adminSetPost = require('./route/manage/set-post');
 const adminLock = require('./route/manage/lock');
 const adminUnlock = require('./route/manage/unlock');
 const adminDelete = require('./route/manage/delete');
+const adminSubmit = require('./route/manage/submit');
+const adminGetSingle = require('./route/manage/get-single');
 
 const salt = randChar(32);
 const app = new Koa();
@@ -54,6 +56,8 @@ rout.post('/', systemInfo)
     .post('/v1/manage/thread/:name/lock', adminLock)
     .post('/v1/manage/thread/:name/unlock', adminUnlock)
     .post('/v1/manage/thread/:name/delete', adminDelete)
+    .post('/v1/manage/thread/:name/submit', adminSubmit)
+    .post('/v1/manage/thread/:name/get-single/:id', adminGetSingle)
     .post('*', unknown)
     .get('*', unknown)
     .options('*', (ctx) => {
