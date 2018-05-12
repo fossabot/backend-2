@@ -36,16 +36,16 @@ module.exports = async (ctx) => {
 
             Array.from(tmpContent).forEach((item) => {
                 const newItem = item;
-                // 电子邮件 md5
-                const emailHashed = crypto.createHash('md5');
-                emailHashed.update(newItem.email);
-                newItem.dataValues.emailHashed = emailHashed.digest('hex');
-                delete newItem.dataValues.email;
                 // 管理员信息
                 if (newItem.by_admin) {
                     newItem.dataValues.name = config.common.admin.username;
                     newItem.dataValues.email = config.common.admin.email;
                 }
+                // 电子邮件 md5
+                const emailHashed = crypto.createHash('md5');
+                emailHashed.update(newItem.email);
+                newItem.dataValues.emailHashed = emailHashed.digest('hex');
+                delete newItem.dataValues.email;
                 content.push(newItem);
             });
 
