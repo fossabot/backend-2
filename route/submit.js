@@ -207,7 +207,7 @@ module.exports = async (ctx) => {
                         },
                     });
                     const templateData = {
-                        siteTitle: _.escape(config.common.siteTitle),
+                        siteTitle: _.escape(config.common.name),
                         masterName: _.escape(parent.name),
                         url: _.escape(threadMeta.url),
                         title: _.escape(threadMeta.title),
