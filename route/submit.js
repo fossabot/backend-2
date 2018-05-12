@@ -187,37 +187,42 @@ module.exports = async (ctx) => {
             printLog('error', `An error occurred while updating data: ${e}`);
         }
         // 发送邮件
-        if (!config.email.enabled && info.parent >= 0) {
-            printLog('info', 'Sending email');
+        if (config.email.enabled && info.parent >= 0) {
+            printLog('info', 'Preparing send email');
             try {
                 const parent = await Post.find({
-                    attributes: ['email'],
+                    attributes: ['name', 'email', 'receive_email'],
                     where: {
                         moderated: true,
                         hidden: false,
                         id: info.parent,
                     },
                 });
-                const threadMeta = await thread.find({
-                    where: {
-                        name: ctx.params.name,
-                    },
-                });
-                const templateData = {
-                    siteTitle: _.escape(config.common.siteTitle),
-                    masterName: _.escape(parent.name),
-                    url: _.escape(threadMeta.url),
-                    title: _.escape(threadMeta.title),
-                    name: _.escape(config.common.admin.username),
-                    content: _.escape(content.content).replace(/\n/gm, '<br>'),
-                };
-                const mailContent = rendTemplate(fs.readFileSync(path.resolve(target, 'template/mail-reply.html')), templateData);
-                await sendMail({
-                    to: parent.email,
-                    subject: rendTemplate(config.email.replyTitle, templateData),
-                    // text: '',
-                    html: mailContent,
-                });
+                printLog('debug', parent.receive_email);
+                if (parent.receive_email && parent.receive_email !== '') {
+                    printLog('info', 'Sending email');
+                    const threadMeta = await thread.find({
+                        where: {
+                            name: ctx.params.name,
+                        },
+                    });
+                    const templateData = {
+                        siteTitle: _.escape(config.common.siteTitle),
+                        masterName: _.escape(parent.name),
+                        url: _.escape(threadMeta.url),
+                        title: _.escape(threadMeta.title),
+                        name: _.escape(info.name),
+                        content: _.escape(content.content).replace(/\n/gm, '<br>'),
+                    };
+                    const templateString = fs.readFileSync(path.resolve(target, 'template/mail-reply.html'), { encoding: 'utf8' });
+                    const mailContent = rendTemplate(templateString, templateData);
+                    await sendMail({
+                        to: parent.email,
+                        subject: rendTemplate(config.email.replyTitle, templateData),
+                        // text: '',
+                        html: mailContent,
+                    });
+                }
             } catch (e) {
                 printLog('error', `An error occurred while sending E-mail: ${e}`);
             }
