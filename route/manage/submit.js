@@ -58,6 +58,7 @@ module.exports = async (ctx) => {
     });
     const birth = new Date();
     const content = {
+        name: 'admin',
         parent: info.parent,
         content: info.content,
         moderated: true,
@@ -66,7 +67,7 @@ module.exports = async (ctx) => {
         user_agent: ctx.request.header['user-agent'],
         birth,
         by_admin: true,
-        receive_email: false,
+        receive_email: true,
     };
 
     // 添加数据
