@@ -1,8 +1,8 @@
 const fs = require('fs-extra');
 const path = require('path');
 const Sequelize = require('sequelize');
-const printLog = require('./log');
-const targetHelper = require('./target-dir');
+const printLog = require('../lib/log');
+const targetHelper = require('../lib/target-dir');
 const argv = require('minimist')(process.argv.slice(2));
 const structPost = require('../struct/post');
 

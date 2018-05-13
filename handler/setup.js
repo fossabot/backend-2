@@ -1,12 +1,12 @@
 const fs = require('fs-extra');
 const path = require('path');
 const crypto = require('crypto');
-const printLog = require('./log');
-const randChar = require('./randchar');
+const printLog = require('../lib/log');
+const randChar = require('../lib/randchar');
 const initIndex = require('./init-index');
-const targetHelper = require('./target-dir');
-const inputFallback = require('./cli-input');
-const getSalted = require('./get-salted');
+const targetHelper = require('../lib/target-dir');
+const inputFallback = require('../lib/cli-input');
+const getSalted = require('../lib/get-salted');
 
 module.exports = async (target) => {
     const targetDir = targetHelper(target);

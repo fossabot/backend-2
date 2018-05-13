@@ -1,10 +1,10 @@
 const fs = require('fs-extra');
 const path = require('path');
 const crypto = require('crypto');
-const printLog = require('./log');
-const randChar = require('./randchar');
-const targetHelper = require('./target-dir');
-const inputFallback = require('./cli-input');
+const printLog = require('../lib/log');
+const randChar = require('../lib/randchar');
+const targetHelper = require('../lib/target-dir');
+const inputFallback = require('../lib/cli-input');
 
 module.exports = async (target) => {
     try {

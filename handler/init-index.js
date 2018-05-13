@@ -1,5 +1,5 @@
 const Sequelize = require('sequelize');
-const printLog = require('./log');
+const printLog = require('../lib/log');
 const structPostUnread = require('../struct/post-unread');
 const structThread = require('../struct/thread');
 

@@ -2,10 +2,10 @@
 
 const argv = require('minimist')(process.argv.slice(2));
 const printLog = require('./lib/log');
-const setup = require('./lib/setup');
-const template = require('./lib/template');
+const setup = require('./handler/setup');
+const template = require('./handler/template');
 const server = require('./server');
-const resetPassword = require('./lib/reset-password');
+const resetPassword = require('./handler/reset-password');
 const fs = require('fs');
 const path = require('path');
 
