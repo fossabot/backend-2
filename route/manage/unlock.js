@@ -3,6 +3,7 @@ const path = require('path');
 const auth = require('../../lib/auth');
 const printLog = require('../../lib/log');
 const target = require('../../lib/base-path');
+const sha256 = require('../../lib/get-sha256');
 
 module.exports = async (ctx) => {
     printLog('debug', `Use route handler ${__filename}`);
@@ -14,8 +15,8 @@ module.exports = async (ctx) => {
         return false;
     }
 
-    const absPath = path.resolve(target, 'threads', `${ctx.params.name}.lock`);
-    printLog('debug', `Variable absPath: ${absPath}`);
+    const absPath = path.resolve(target, 'threads', `${info.url}.lock`);
+    printLog('debug', `Variable absPath: ${sha256(absPath)}`);
     if (fs.existsSync(absPath)) {
         try {
             fs.unlinkSync(absPath);

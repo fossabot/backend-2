@@ -4,12 +4,13 @@ const auth = require('../../lib/auth');
 const printLog = require('../../lib/log');
 const structPost = require('../../struct/post');
 const target = require('../../lib/base-path');
+const sha256 = require('../../lib/get-sha256');
 
 module.exports = async (ctx) => {
     printLog('debug', `Use route handler ${__filename}`);
     ctx.type = 'application/json';
     const info = ctx.request.body;
-    const absPath = path.resolve(target, 'threads', `${ctx.params.name}.db`);
+    const absPath = path.resolve(target, 'threads', `${sha256(info.url)}.db`);
     if (!auth(info.key)) {
         ctx.status = 401;
         ctx.response.body = JSON.stringify({ status: 'error', info: 'auth failed' }, null, 4);

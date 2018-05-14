@@ -28,7 +28,7 @@ module.exports = async (ctx) => {
         await thread.destroy({
             force: true,
             where: {
-                name: ctx.params.name,
+                name: info.url,
             },
         });
 
@@ -40,13 +40,13 @@ module.exports = async (ctx) => {
         await postUnread.destroy({
             force: true,
             where: {
-                location: ctx.params.name,
+                location: info.url,
             },
         });
 
         // 删除文件
-        const fileData = path.resolve(target, 'threads', `${ctx.params.name}.db`);
-        const fileLock = path.resolve(target, 'threads', `${ctx.params.name}.lock`);
+        const fileData = path.resolve(target, 'threads', `${info.url}.db`);
+        const fileLock = path.resolve(target, 'threads', `${info.url}.lock`);
         if (fs.existsSync(fileData)) fs.unlinkSync(fileData);
         if (fs.existsSync(fileLock)) fs.unlinkSync(fileLock);
 

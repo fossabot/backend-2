@@ -6,7 +6,8 @@ module.exports = async (ctx) => {
     const {
         script, element, server, fixedHeight,
     } = config.common.frontendLoader;
-    const threadName = ctx.params.name;
+    const info = ctx.request.body;
+    const threadName = info.url;
     ctx.type = 'text/javascript';
     ctx.response.body = `(function () {
     var s = document.createElement('script');

@@ -6,12 +6,13 @@ const printLog = require('../lib/log');
 const target = require('../lib/base-path');
 const config = require('../lib/config');
 const structPost = require('../struct/post');
+const sha256 = require('../lib/get-sha256');
 
 module.exports = async (ctx) => {
     printLog('debug', `Use route handler ${__filename}`);
     ctx.type = 'application/json';
-
-    const absPath = path.resolve(target, 'threads', `${ctx.params.name}.db`);
+    const info = ctx.request.body;
+    const absPath = path.resolve(target, 'threads', `${sha256(info.url)}.db`);
     printLog('debug', `Variable absPath: ${absPath}`);
     if (fs.existsSync(absPath)) {
         try {
@@ -51,8 +52,8 @@ module.exports = async (ctx) => {
 
             ctx.response.body = JSON.stringify({
                 status: 'success',
-                name: ctx.params.name,
-                locked: fs.existsSync(path.resolve(target, 'threads', `${ctx.params.name}.lock`)),
+                name: info.url,
+                locked: fs.existsSync(path.resolve(target, 'threads', `${info.url}.lock`)),
                 required_info: config.common.requiredInfo,
                 content,
             }, null, 4);
@@ -65,7 +66,7 @@ module.exports = async (ctx) => {
     } else {
         ctx.response.body = JSON.stringify({
             status: 'success',
-            name: ctx.params.name,
+            name: info.url,
             locked: false,
             required_info: config.common.requiredInfo,
             content: [],

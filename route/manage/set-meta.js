@@ -34,7 +34,7 @@ module.exports = async (ctx) => {
             title: info.title,
             url: info.url,
         }, {
-            where: { name: ctx.params.name },
+            where: { name: info.url },
         });
         ctx.response.body = JSON.stringify({ status: 'success' }, null, 4);
         return true;

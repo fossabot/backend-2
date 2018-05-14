@@ -5,6 +5,7 @@ const auth = require('../../lib/auth');
 const printLog = require('../../lib/log');
 const structPost = require('../../struct/post');
 const target = require('../../lib/base-path');
+const sha256 = require('../../lib/get-sha256');
 
 module.exports = async (ctx) => {
     printLog('debug', `Use route handler ${__filename}`);
@@ -16,7 +17,7 @@ module.exports = async (ctx) => {
         return false;
     }
 
-    const absPath = path.resolve(target, 'threads', `${ctx.params.name}.db`);
+    const absPath = path.resolve(target, 'threads', `${sha256(info.url)}.db`);
     printLog('debug', `Variable absPath: ${absPath}`);
     if (fs.existsSync(absPath)) {
         try {

@@ -12,6 +12,7 @@ const rendTemplate = require('../../lib/rend-template');
 const structPost = require('../../struct/post');
 const structThread = require('../../struct/thread');
 const structPostUnread = require('../../struct/post-unread');
+const sha256 = require('../../lib/get-sha256');
 
 const isBlank = str => (typeof str === 'undefined' || str === null || str.trim() === '');
 
@@ -19,7 +20,7 @@ module.exports = async (ctx) => {
     printLog('debug', `Use route handler ${__filename}`);
     ctx.type = 'application/json';
     const info = ctx.request.body;
-    const absPath = path.resolve(target, 'threads', `${ctx.params.name}.db`);
+    const absPath = path.resolve(target, 'threads', `${sha256(info.url)}.db`);
     const seq = new Sequelize('main', null, null, {
         dialect: 'sqlite',
         storage: path.resolve(target, 'index.db'),
@@ -114,7 +115,7 @@ module.exports = async (ctx) => {
             printLog('info', 'Adding unread post');
             const unreadContent = Object.assign({}, content);
             unreadContent.marked = false;
-            unreadContent.location = ctx.params.name;
+            unreadContent.location = info.url;
             unreadContent.origin_id = create.dataValues.id;
             const unreadPost = seq.define('recent', structPostUnread, {
                 createdAt: false,
@@ -124,7 +125,7 @@ module.exports = async (ctx) => {
             printLog('info', 'Updating counter');
             if (isFirst) {
                 await thread.create({
-                    name: ctx.params.name,
+                    name: info.url,
                     post: postAmount,
                     title: info.title,
                     url: info.url,
@@ -133,7 +134,7 @@ module.exports = async (ctx) => {
                 await thread.update({
                     post: postAmount,
                 }, {
-                    where: { name: ctx.params.name },
+                    where: { name: info.url },
                 });
             }
         } catch (e) {
@@ -153,7 +154,7 @@ module.exports = async (ctx) => {
                 });
                 const threadMeta = await thread.find({
                     where: {
-                        name: ctx.params.name,
+                        name: info.url,
                     },
                 });
                 const templateData = {
@@ -181,7 +182,7 @@ module.exports = async (ctx) => {
             try {
                 const thre = await thread.find({
                     where: {
-                        name: ctx.params.name,
+                        name: info.url,
                     },
                 });
                 const cont = await Post.find({
@@ -194,7 +195,7 @@ module.exports = async (ctx) => {
                 printLog('error', `An error occurred while sending webhook request: ${e}`);
             }
         }
-        printLog('info', `All action regarding ${ctx.params.name} done`);
+        printLog('info', `All action regarding ${info.url} done`);
         return true;
     })();
     return true;
