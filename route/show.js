@@ -9,9 +9,14 @@ const structPost = require('../struct/post');
 const sha256 = require('../lib/get-sha256');
 
 module.exports = async (ctx) => {
-    printLog('debug', `Use route handler ${__filename}`);
     ctx.type = 'application/json';
     const info = ctx.request.body;
+    printLog('debug', `Use route handler ${__filename}`);
+    if (!info.url || path.resolve(target, 'threads', `${sha256(info.url)}.db`)) {
+        ctx.status = 404;
+        ctx.response.body = JSON.stringify({ status: 'error', info: 'post not found' }, null, 4);
+        return false;
+    }
     const absPath = path.resolve(target, 'threads', `${sha256(info.url)}.db`);
     printLog('debug', `Variable absPath: ${absPath}`);
     if (fs.existsSync(absPath)) {
