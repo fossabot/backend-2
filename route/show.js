@@ -53,7 +53,7 @@ module.exports = async (ctx) => {
             ctx.response.body = JSON.stringify({
                 status: 'success',
                 name: info.url,
-                locked: fs.existsSync(path.resolve(target, 'threads', `${info.url}.lock`)),
+                locked: fs.existsSync(path.resolve(target, 'threads', `${sha256(info.url)}.lock`)),
                 required_info: config.common.requiredInfo,
                 content,
             }, null, 4);

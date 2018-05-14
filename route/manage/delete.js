@@ -6,6 +6,7 @@ const structPostUnread = require('../../struct/post-unread');
 const auth = require('../../lib/auth');
 const printLog = require('../../lib/log');
 const target = require('../../lib/base-path');
+const sha256 = require('../../lib/get-sha256');
 
 module.exports = async (ctx) => {
     printLog('debug', `Use route handler ${__filename}`);
@@ -45,8 +46,8 @@ module.exports = async (ctx) => {
         });
 
         // 删除文件
-        const fileData = path.resolve(target, 'threads', `${info.url}.db`);
-        const fileLock = path.resolve(target, 'threads', `${info.url}.lock`);
+        const fileData = path.resolve(target, 'threads', `${sha256(info.url)}.db`);
+        const fileLock = path.resolve(target, 'threads', `${sha256(info.url)}.lock`);
         if (fs.existsSync(fileData)) fs.unlinkSync(fileData);
         if (fs.existsSync(fileLock)) fs.unlinkSync(fileLock);
 

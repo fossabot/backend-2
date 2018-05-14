@@ -15,8 +15,8 @@ module.exports = async (ctx) => {
         return false;
     }
 
-    const absPath = path.resolve(target, 'threads', `${info.url}.lock`);
-    printLog('debug', `Variable absPath: ${sha256(absPath)}`);
+    const absPath = path.resolve(target, 'threads', `${sha256(info.url)}.lock`);
+    printLog('debug', `Variable absPath: ${absPath}`);
     if (fs.existsSync(absPath)) {
         try {
             fs.unlinkSync(absPath);
