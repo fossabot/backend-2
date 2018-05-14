@@ -18,9 +18,14 @@ const structPostUnread = require('../struct/post-unread');
 const isBlank = str => (typeof str === 'undefined' || str === null || str.trim() === '');
 
 module.exports = async (ctx) => {
-    printLog('debug', `Use route handler ${__filename}`);
     ctx.type = 'application/json';
     const info = ctx.request.body;
+    printLog('debug', `Use route handler ${__filename}`);
+    if (!info.url || path.resolve(target, 'threads', `${sha256(info.url)}.db`)) {
+        ctx.status = 404;
+        ctx.response.body = JSON.stringify({ status: 'error', info: 'post not found' }, null, 4);
+        return false;
+    }
     const absPath = path.resolve(target, 'threads', `${sha256(info.url)}.db`);
     const seq = new Sequelize('main', null, null, {
         dialect: 'sqlite',
