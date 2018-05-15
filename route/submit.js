@@ -239,7 +239,7 @@ module.exports = async (ctx) => {
             try {
                 const thre = await thread.find({
                     where: {
-                        name: info.url,
+                        url: info.url,
                     },
                 });
                 const cont = await Post.find({
