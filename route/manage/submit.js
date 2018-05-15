@@ -13,6 +13,7 @@ const structPost = require('../../struct/post');
 const structThread = require('../../struct/thread');
 const structPostUnread = require('../../struct/post-unread');
 const sha256 = require('../../lib/get-sha256');
+const getIP = require('../../lib/get-ip');
 
 const isBlank = str => (typeof str === 'undefined' || str === null || str.trim() === '');
 
@@ -63,7 +64,7 @@ module.exports = async (ctx) => {
         content: info.content,
         moderated: true,
         hidden: false,
-        ip: ctx.ip,
+        ip: getIP(ctx),
         user_agent: ctx.request.header['user-agent'],
         birth,
         by_admin: true,

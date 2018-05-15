@@ -14,6 +14,7 @@ const rendTemplate = require('../lib/rend-template');
 const structPost = require('../struct/post');
 const structThread = require('../struct/thread');
 const structPostUnread = require('../struct/post-unread');
+const getIP = require('../lib/get-ip');
 
 const isBlank = str => (typeof str === 'undefined' || str === null || str.trim() === '');
 
@@ -32,7 +33,7 @@ module.exports = async (ctx) => {
         storage: path.resolve(target, 'index.db'),
         operatorsAliases: false,
     });
-    const cdPath = path.resolve(target, 'cache/recentIP', ctx.ip);
+    const cdPath = path.resolve(target, 'cache/recentIP', getIP(ctx));
     let isFirst = false;
     let currentError;
 
@@ -101,7 +102,7 @@ module.exports = async (ctx) => {
         content: info.content,
         moderated: !config.common.moderation,
         hidden: false,
-        ip: ctx.ip,
+        ip: getIP(ctx),
         user_agent: ctx.request.header['user-agent'],
         birth,
         by_admin: false,
@@ -125,7 +126,7 @@ module.exports = async (ctx) => {
     }
     const editToken = config.guard.gusetEditTimeout < 0 ? false : getEditToken(
         info.email,
-        ctx.ip,
+        getIP(ctx),
         info.url,
         create.dataValues.id,
         birth,
