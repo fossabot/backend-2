@@ -59,7 +59,6 @@ module.exports = async (ctx) => {
     });
     const birth = new Date();
     const content = {
-        name: 'admin',
         parent: info.parent,
         content: info.content,
         moderated: true,
