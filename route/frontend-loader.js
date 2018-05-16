@@ -9,7 +9,9 @@ module.exports = async (ctx) => {
     s.src = opt.script;
     s.onload = function () {
         var pomment = new Pomment(e, opt.server, {
-            fixedHeight: opt.fixedHeight
+            fixedHeight: opt.fixedHeight,
+            requireEmail: ${config.common.requireEmail},
+            requireWebsite: ${config.common.requireWebsite}
         });
         pomment.init();
     }
