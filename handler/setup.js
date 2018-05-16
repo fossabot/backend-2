@@ -20,19 +20,17 @@ module.exports = async (target) => {
         common: {
             name: path.parse(targetDir).name,
             admin: null,
-            requiredInfo: {
-                email: true,
-                website: false,
-            },
-            webhook: null,
+            salt: randChar(24),
+            requireEmail: true,
+            requireWebsite: false,
             moderation: false,
+            webhook: null,
             frontendLoader: {
                 script: 'path/to/your/pomment.min.js',
                 element: '#pomment',
                 server: 'http://127.0.0.1:3000',
                 fixedHeight: 0,
             },
-            salt: randChar(24),
         },
         email: {
             enabled: false,
