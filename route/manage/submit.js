@@ -140,6 +140,16 @@ module.exports = async (ctx) => {
         } catch (e) {
             printLog('error', `An error occurred while updating data: ${e}`);
         }
+        let thre;
+        try {
+            thre = await thread.find({
+                where: {
+                    url: info.url,
+                },
+            });
+        } catch (e) {
+            printLog('error', `An error occurred while getting data: ${e}`);
+        }
         // 发送邮件
         if (!config.email.enabled && info.parent >= 0) {
             printLog('info', 'Sending email');
@@ -152,16 +162,11 @@ module.exports = async (ctx) => {
                         id: info.parent,
                     },
                 });
-                const threadMeta = await thread.find({
-                    where: {
-                        name: info.url,
-                    },
-                });
                 const templateData = {
                     siteTitle: _.escape(config.common.siteTitle),
                     masterName: _.escape(parent.name),
-                    url: _.escape(threadMeta.url),
-                    title: _.escape(threadMeta.title),
+                    url: _.escape(thre.url),
+                    title: _.escape(thre.title),
                     name: _.escape(config.common.admin.username),
                     content: _.escape(content.content).replace(/\n/gm, '<br>'),
                 };
@@ -180,11 +185,6 @@ module.exports = async (ctx) => {
         if (config.common.webhook) {
             printLog('info', 'Sending webhook request');
             try {
-                const thre = await thread.find({
-                    where: {
-                        name: info.url,
-                    },
-                });
                 const cont = await Post.find({
                     where: {
                         id: create.dataValues.id,
