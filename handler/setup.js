@@ -19,6 +19,8 @@ module.exports = async (target) => {
     const initConfig = {
         common: {
             name: path.parse(targetDir).name,
+            webHost: '127.0.0.1',
+            webPost: 4600,
             admin: null,
             salt: randChar(24),
             requireEmail: true,

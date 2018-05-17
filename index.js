@@ -16,9 +16,9 @@ const showHelp = () => {
 
 Avaliable commands:
 
- - init [PATH]                      Init a Pomment data directory
- - web [PATH] [-h HOST] [-p PORT]   Run the web service. Default: 127.0.0.1:3000
- - reset-password [PATH]            Reset admin's password`);
+ - init [PATH]              Init a Pomment data directory
+ - web [PATH]               Run the web service
+ - reset-password [PATH]    Reset admin's password`);
 };
 
 switch (argv._[0]) {
@@ -29,12 +29,10 @@ case 'init': {
 }
 case 'web': {
     template(argv._[1]);
-    const webHost = typeof argv.h !== 'undefined' ? argv.h : '127.0.0.1';
-    const webPort = typeof argv.p !== 'undefined' ? Number(argv.p) : 3000;
     if (typeof process.getuid !== 'undefined' && process.getuid() === 0) {
         printLog('warn', 'Running Pomment as root is NOT recommended.');
     }
-    server(webHost, webPort);
+    server();
     break;
 }
 case 'reset-password': {
