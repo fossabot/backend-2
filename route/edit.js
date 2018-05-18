@@ -6,19 +6,20 @@ const config = require('../lib/config');
 const target = require('../lib/base-path');
 const printLog = require('../lib/log');
 const sha256 = require('../lib/get-sha256');
+const fs = require('fs');
 
 const isBlank = str => (typeof str === 'undefined' || str === null || str.trim() === '');
 
 module.exports = async (ctx) => {
     ctx.type = 'application/json';
     const info = ctx.request.body;
+    const absPath = path.resolve(target, 'threads', `${sha256(info.url)}.db`);
     printLog('debug', `Use route handler ${__filename}`);
-    if (!info.url || path.resolve(target, 'threads', `${sha256(info.url)}.db`)) {
+    if (!info.url || fs.existsSync(absPath)) {
         ctx.status = 404;
         ctx.response.body = JSON.stringify({ status: 'error', info: 'post not found' }, null, 4);
         return false;
     }
-    const absPath = path.resolve(target, 'threads', `${sha256(info.url)}.db`);
     let currentError;
     if (isBlank(info.content)) {
         currentError = 'bad content';
