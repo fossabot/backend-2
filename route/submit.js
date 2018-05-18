@@ -1,20 +1,15 @@
-const _ = require('lodash');
 const fs = require('fs-extra');
 const path = require('path');
 const Sequelize = require('sequelize');
 const isVaildEmail = require('email-validator').validate;
 const getEditToken = require('../lib/get-salted');
 const printLog = require('../lib/log');
-const webhook = require('../lib/webhook');
-const sendMail = require('../lib/send-mail');
 const config = require('../lib/config');
 const target = require('../lib/base-path');
 const sha256 = require('../lib/get-sha256');
-const rendTemplate = require('../lib/rend-template');
 const structPost = require('../struct/post');
-const structThread = require('../struct/thread');
-const structPostUnread = require('../struct/post-unread');
 const getIP = require('../lib/get-ip');
+const afterSubmit = require('../handler/after-submit');
 
 const isBlank = str => (typeof str === 'undefined' || str === null || str.trim() === '');
 
@@ -28,11 +23,6 @@ module.exports = async (ctx) => {
         return false;
     }
     const absPath = path.resolve(target, 'threads', `${sha256(info.url)}.db`);
-    const seq = new Sequelize('main', null, null, {
-        dialect: 'sqlite',
-        storage: path.resolve(target, 'index.db'),
-        operatorsAliases: false,
-    });
     const cdPath = path.resolve(target, 'cache/recentIP', getIP(ctx));
     let isFirst = false;
     let currentError;
@@ -154,106 +144,8 @@ module.exports = async (ctx) => {
     ctx.response.body = JSON.stringify(output, null, 4);
 
     // 客户端处理完毕后，更新评论计数器，增加最近评论
-    (async () => {
-        printLog('debug', 'Checking post amount');
-        const postAmount = Array.from(await Post.findAll({
-            where: {
-                moderated: true,
-                hidden: false,
-            },
-        })).length;
-        const thread = seq.define('thread', structThread);
-        printLog('debug', `Post amount: ${postAmount}`);
-        try {
-            printLog('info', 'Adding unread post');
-            const unreadContent = Object.assign({}, content);
-            unreadContent.marked = false;
-            unreadContent.location = info.url;
-            unreadContent.origin_id = create.dataValues.id;
-            const unreadPost = seq.define('recent', structPostUnread, {
-                createdAt: false,
-                updatedAt: false,
-            });
-            await unreadPost.create(unreadContent);
-            printLog('info', 'Updating counter');
-            if (isFirst) {
-                await thread.create({
-                    url: info.url,
-                    post: postAmount,
-                    title: info.title,
-                });
-            } else {
-                await thread.update({
-                    post: postAmount,
-                }, {
-                    where: { name: info.url },
-                });
-            }
-        } catch (e) {
-            printLog('error', `An error occurred while updating data: ${e}`);
-        }
-        // 发送邮件
-        if (config.email.enabled && info.parent >= 0) {
-            printLog('info', 'Preparing send email');
-            try {
-                const parent = await Post.find({
-                    attributes: ['name', 'email', 'receive_email'],
-                    where: {
-                        moderated: true,
-                        hidden: false,
-                        id: info.parent,
-                    },
-                });
-                printLog('debug', parent.receive_email);
-                if (parent.receive_email && parent.receive_email !== '') {
-                    printLog('info', 'Sending email');
-                    const threadMeta = await thread.find({
-                        where: {
-                            name: info.url,
-                        },
-                    });
-                    const templateData = {
-                        siteTitle: _.escape(config.common.name),
-                        masterName: _.escape(parent.name),
-                        url: _.escape(threadMeta.url),
-                        title: _.escape(threadMeta.title),
-                        name: _.escape(info.name),
-                        content: _.escape(content.content).replace(/\n/gm, '<br>'),
-                    };
-                    const templateString = fs.readFileSync(path.resolve(target, 'template/mail-reply.html'), { encoding: 'utf8' });
-                    const mailContent = rendTemplate(templateString, templateData);
-                    await sendMail({
-                        to: parent.email,
-                        subject: rendTemplate(config.email.replyTitle, templateData),
-                        // text: '',
-                        html: mailContent,
-                    });
-                }
-            } catch (e) {
-                printLog('error', `An error occurred while sending E-mail: ${e}`);
-            }
-        }
-        // 处理 webhook
-        if (config.common.webhook) {
-            printLog('info', 'Sending webhook request');
-            try {
-                const thre = await thread.find({
-                    where: {
-                        url: info.url,
-                    },
-                });
-                const cont = await Post.find({
-                    where: {
-                        id: create.dataValues.id,
-                    },
-                });
-                await webhook('submit', thre, cont);
-            } catch (e) {
-                printLog('error', `An error occurred while sending webhook request: ${e}`);
-            }
-        }
-        printLog('info', `All action regarding ${info.url} done`);
-        return true;
-    })();
+    afterSubmit({
+        Post, info, content, isFirst, create,
+    });
     return true;
 };
