@@ -72,8 +72,8 @@ const afterSubmit = async ({
             if (parent.receive_email && parent.receive_email !== '') {
                 printLog('info', 'Sending email');
                 if (parent.by_admin) {
-                    parent.name = config.common.admin.username;
-                    parent.email = config.common.admin.email;
+                    parent.dataValues.name = config.common.admin.username;
+                    parent.dataValues.email = config.common.admin.email;
                 }
                 const threadMeta = await thread.find({
                     where: {
@@ -91,7 +91,7 @@ const afterSubmit = async ({
                 const templateString = fs.readFileSync(path.resolve(target, 'template/mail-reply.html'), { encoding: 'utf8' });
                 const mailContent = rendTemplate(templateString, templateData);
                 await sendMail({
-                    to: parent.by_admin ? parent.email : config.common.admin.email,
+                    to: parent.email,
                     subject: rendTemplate(config.email.replyTitle, templateData),
                     // text: '',
                     html: mailContent,
