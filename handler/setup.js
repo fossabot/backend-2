@@ -20,7 +20,7 @@ module.exports = async (target) => {
         common: {
             name: path.parse(targetDir).name,
             webHost: '127.0.0.1',
-            webPost: 4600,
+            webPort: 4600,
             admin: null,
             salt: randChar(24),
             requireEmail: true,
