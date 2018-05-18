@@ -50,7 +50,7 @@ const afterSubmit = async ({
             await thread.update({
                 post: postAmount,
             }, {
-                where: { name: info.url },
+                where: { url: info.url },
             });
         }
     } catch (e) {
