@@ -77,7 +77,7 @@ const afterSubmit = async ({
                 }
                 const threadMeta = await thread.find({
                     where: {
-                        name: info.url,
+                        url: info.url,
                     },
                 });
                 const templateData = {
