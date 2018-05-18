@@ -15,7 +15,7 @@ module.exports = async (ctx) => {
     const info = ctx.request.body;
     const absPath = path.resolve(target, 'threads', `${sha256(info.url)}.db`);
     printLog('debug', `Use route handler ${__filename}`);
-    if (!info.url || fs.existsSync(absPath)) {
+    if (!info.url || !fs.existsSync(absPath)) {
         ctx.status = 404;
         ctx.response.body = JSON.stringify({ status: 'error', info: 'post not found' }, null, 4);
         return false;
