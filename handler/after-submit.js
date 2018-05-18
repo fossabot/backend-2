@@ -61,7 +61,7 @@ const afterSubmit = async ({
         printLog('info', 'Preparing send email');
         try {
             const parent = await Post.find({
-                attributes: ['name', 'email', 'receive_email'],
+                attributes: ['name', 'email', 'by_admin', 'receive_email'],
                 where: {
                     moderated: true,
                     hidden: false,
