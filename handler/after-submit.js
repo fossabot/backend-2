@@ -91,7 +91,7 @@ const afterSubmit = async ({
                 const templateString = fs.readFileSync(path.resolve(target, 'template/mail-reply.html'), { encoding: 'utf8' });
                 const mailContent = rendTemplate(templateString, templateData);
                 await sendMail({
-                    to: parent.email,
+                    to: parent.by_admin ? parent.email : config.common.admin.email,
                     subject: rendTemplate(config.email.replyTitle, templateData),
                     // text: '',
                     html: mailContent,
