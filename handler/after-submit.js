@@ -14,18 +14,16 @@ const webhook = require('../lib/webhook');
 const afterSubmit = async ({
     Post, info, content, isFirst, create,
 } = {}) => {
+    printLog('debug', 'Checking post amount');
+    const postAmount = Array.from(await Post.findAndCountAll({
+        moderated: true,
+        hidden: false,
+    })).length;
     const seq = new Sequelize('main', null, null, {
         dialect: 'sqlite',
         storage: path.resolve(target, 'index.db'),
         operatorsAliases: false,
     });
-    printLog('debug', 'Checking post amount');
-    const postAmount = Array.from(await Post.findAll({
-        where: {
-            moderated: true,
-            hidden: false,
-        },
-    })).length;
     const thread = seq.define('thread', structThread);
     printLog('debug', `Post amount: ${postAmount}`);
     try {
