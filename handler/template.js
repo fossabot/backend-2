@@ -3,13 +3,12 @@ const path = require('path');
 const Sequelize = require('sequelize');
 const printLog = require('../lib/log');
 const targetHelper = require('../lib/target-dir');
-const argv = require('minimist')(process.argv.slice(2));
 const structPost = require('../struct/post');
 
 module.exports = async (target) => {
     const tempDir = path.resolve(targetHelper(target), 'template');
     const tempThread = path.resolve(tempDir, 'system/thread.db');
-    if (argv.debug) {
+    if (process.env.POMMENT_DEBUG) {
         printLog('debug', 'Remove template directory');
         fs.removeSync(tempDir);
     }

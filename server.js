@@ -44,7 +44,7 @@ app.use((ctx, next) => {
 app.use((ctx, next) => {
     ctx.set('Access-Control-Request-Method', 'POST');
     ctx.set('Access-Control-Allow-Headers', 'Content-Type');
-    if (argv.debug || typeof ctx.headers.referer === 'undefined') {
+    if (process.env.POMMENT_DEBUG || typeof ctx.headers.referer === 'undefined') {
         ctx.set('Access-Control-Allow-Origin', '*');
         return next();
     } else if (config.guard.allowedOrigin) {
