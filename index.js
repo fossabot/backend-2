@@ -1,11 +1,9 @@
 #!/usr/bin/env node
 
+/* eslint-disable global-require */
+
 const argv = require('minimist')(process.argv.slice(2));
 const printLog = require('./lib/log');
-const setup = require('./handler/setup');
-const template = require('./handler/template');
-const server = require('./server');
-const resetPassword = require('./handler/reset-password');
 const fs = require('fs');
 const path = require('path');
 
@@ -23,20 +21,20 @@ Avaliable commands:
 
 switch (argv._[0]) {
 case 'init': {
-    setup(argv._[1]);
-    template(argv._[1]);
+    require('./handler/setup')(argv._[1]);
+    require('./handler/template')(argv._[1]);
     break;
 }
 case 'web': {
-    template(argv._[1]);
+    require('./handler/template')(argv._[1]);
     if (typeof process.getuid !== 'undefined' && process.getuid() === 0) {
         printLog('warn', 'Running Pomment as root is NOT recommended.');
     }
-    server();
+    require('./server')();
     break;
 }
 case 'reset-password': {
-    resetPassword(argv._[1]);
+    require('./handler/reset-password')(argv._[1]);
     break;
 }
 case 'version': {
