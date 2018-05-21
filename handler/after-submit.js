@@ -2,6 +2,7 @@ const Sequelize = require('sequelize');
 const _ = require('lodash');
 const config = require('../lib/config');
 const fs = require('fs-extra');
+const htmlToText = require('html-to-text');
 const path = require('path');
 const printLog = require('../lib/log');
 const rendTemplate = require('../lib/rend-template');
@@ -69,10 +70,6 @@ const afterSubmit = async ({
             printLog('debug', parent.receive_email);
             if (parent.receive_email && parent.receive_email !== '') {
                 printLog('info', 'Sending email');
-                if (parent.by_admin) {
-                    parent.dataValues.name = config.common.admin.username;
-                    parent.dataValues.email = config.common.admin.email;
-                }
                 const threadMeta = await thread.find({
                     where: {
                         url: info.url,
@@ -80,7 +77,8 @@ const afterSubmit = async ({
                 });
                 const templateData = {
                     siteTitle: _.escape(config.common.name),
-                    masterName: _.escape(parent.name),
+                    masterName:
+                        _.escape(parent.by_admin ? parent.name : config.common.admin.username),
                     url: _.escape(threadMeta.url),
                     title: _.escape(threadMeta.title),
                     name: _.escape(info.name),
@@ -88,11 +86,10 @@ const afterSubmit = async ({
                 };
                 const templateString = fs.readFileSync(path.resolve(target, 'template/mail-reply.html'), { encoding: 'utf8' });
                 const mailContent = rendTemplate(templateString, templateData);
-                printLog('debug', parent.email);
                 await sendMail({
-                    to: parent.email,
+                    to: parent.by_admin ? config.common.admin.email : parent.email,
                     subject: rendTemplate(config.email.replyTitle, templateData),
-                    // text: '',
+                    text: htmlToText.fromString(mailContent),
                     html: mailContent,
                 });
             }
