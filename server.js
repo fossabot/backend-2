@@ -53,7 +53,7 @@ app.use((ctx, next) => {
             url = new URL(ctx.headers.referer);
         } catch (e) {
             ctx.status = 400;
-            ctx.response.body = JSON.stringify({ status: 'error', info: 'bad origin' }, null, 4);
+            ctx.response.body = JSON.stringify({ success: false, info: 'bad origin' }, null, 4);
             return false;
         }
         const whiteList = config.guard.allowedOrigin;
@@ -65,7 +65,7 @@ app.use((ctx, next) => {
         }
     }
     ctx.status = 400;
-    ctx.response.body = JSON.stringify({ status: 'error', info: 'bad origin' }, null, 4);
+    ctx.response.body = JSON.stringify({ success: false, info: 'bad origin' }, null, 4);
     return false;
 });
 
@@ -94,7 +94,7 @@ app.use(rout.routes());
 
 app.use((ctx, next) => {
     if (ctx.status >= 500) {
-        ctx.response.body = JSON.stringify({ status: 'error', info: 'internal server error' }, null, 4);
+        ctx.response.body = JSON.stringify({ success: false, info: 'internal server error' }, null, 4);
     }
     return next();
 });

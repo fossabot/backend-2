@@ -21,7 +21,7 @@ module.exports = async (ctx) => {
     let currentError;
     if (!auth(info.key)) {
         ctx.status = 401;
-        ctx.response.body = JSON.stringify({ status: 'error', info: 'auth failed' }, null, 4);
+        ctx.response.body = JSON.stringify({ success: false, info: 'auth failed' }, null, 4);
         return false;
     }
 
@@ -39,7 +39,7 @@ module.exports = async (ctx) => {
     // 如果前置检查存在没有通过的项目
     if (typeof currentError !== 'undefined') {
         ctx.status = currentError === 'locked' ? 423 : 400;
-        ctx.response.body = JSON.stringify({ status: 'error', info: currentError }, null, 4);
+        ctx.response.body = JSON.stringify({ success: false, info: currentError }, null, 4);
         return false;
     }
     // 数据添加准备
@@ -69,7 +69,7 @@ module.exports = async (ctx) => {
     });
     const create = await Post.create(content);
     const output = {
-        status: 'success',
+        success: true,
         content: {
             id: create.dataValues.id,
             parent: info.parent,

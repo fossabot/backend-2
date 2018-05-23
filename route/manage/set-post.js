@@ -13,7 +13,7 @@ module.exports = async (ctx) => {
     const absPath = path.resolve(target, 'threads', `${sha256(info.url)}.db`);
     if (!auth(info.key)) {
         ctx.status = 401;
-        ctx.response.body = JSON.stringify({ status: 'error', info: 'auth failed' }, null, 4);
+        ctx.response.body = JSON.stringify({ success: false, info: 'auth failed' }, null, 4);
         return false;
     }
 
@@ -35,6 +35,6 @@ module.exports = async (ctx) => {
             id: info.id,
         },
     });
-    ctx.response.body = JSON.stringify({ status: 'success' }, null, 4);
+    ctx.response.body = JSON.stringify({ success: true }, null, 4);
     return true;
 };

@@ -13,7 +13,7 @@ module.exports = async (ctx) => {
     const info = ctx.request.body;
     if (!auth(info.key)) {
         ctx.status = 401;
-        ctx.response.body = JSON.stringify({ status: 'error', info: 'auth failed' }, null, 4);
+        ctx.response.body = JSON.stringify({ success: false, info: 'auth failed' }, null, 4);
         return false;
     }
 
@@ -35,14 +35,14 @@ module.exports = async (ctx) => {
         });
 
         ctx.response.body = JSON.stringify({
-            status: 'success',
+            success: true,
             name: info.url,
             locked: fs.existsSync(path.resolve(target, 'threads', `${info.url}.lock`)),
             content,
         }, null, 4);
     } else {
         ctx.status = 404;
-        ctx.response.body = JSON.stringify({ status: 'error', info: 'thread not found' }, null, 4);
+        ctx.response.body = JSON.stringify({ success: false, info: 'thread not found' }, null, 4);
     }
     return true;
 };

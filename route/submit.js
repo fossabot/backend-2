@@ -19,7 +19,7 @@ module.exports = async (ctx) => {
     printLog('debug', `Use route handler ${__filename}`);
     if (!info.url) {
         ctx.status = 400;
-        ctx.response.body = JSON.stringify({ status: 'error', info: 'invaild url' }, null, 4);
+        ctx.response.body = JSON.stringify({ success: false, info: 'invaild url' }, null, 4);
         return false;
     }
     const absPath = path.resolve(target, 'threads', `${sha256(info.url)}.db`);
@@ -66,7 +66,7 @@ module.exports = async (ctx) => {
             printLog('debug', `lastly: ${lastly}, gap: ${gap}`);
             if (gap < config.guard.coolDownTimeout) {
                 ctx.status = 400;
-                ctx.response.body = JSON.stringify({ status: 'error', info: 'please wait', timeLeft: config.guard.coolDownTimeout - gap }, null, 4);
+                ctx.response.body = JSON.stringify({ success: false, info: 'please wait', timeLeft: config.guard.coolDownTimeout - gap }, null, 4);
                 return false;
             }
         }
@@ -74,7 +74,7 @@ module.exports = async (ctx) => {
     // 如果前置检查存在没有通过的项目
     if (typeof currentError !== 'undefined') {
         ctx.status = currentError === 'locked' ? 423 : 400;
-        ctx.response.body = JSON.stringify({ status: 'error', info: currentError }, null, 4);
+        ctx.response.body = JSON.stringify({ success: false, info: currentError }, null, 4);
         return false;
     }
     // 数据添加准备
@@ -118,7 +118,7 @@ module.exports = async (ctx) => {
         fs.writeFileSync(cdPath, new Date().toISOString());
     }
     const output = {
-        status: 'success',
+        success: true,
         content: {
             id: create.dataValues.id,
             name: info.name,

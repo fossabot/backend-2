@@ -14,7 +14,7 @@ module.exports = async (ctx) => {
     printLog('debug', `Use route handler ${__filename}`);
     if (!info.url) {
         ctx.status = 400;
-        ctx.response.body = JSON.stringify({ status: 'error', info: 'invaild url' }, null, 4);
+        ctx.response.body = JSON.stringify({ success: false, info: 'invaild url' }, null, 4);
         return false;
     }
     const absPath = path.resolve(target, 'threads', `${sha256(info.url)}.db`);
@@ -55,7 +55,7 @@ module.exports = async (ctx) => {
         });
 
         ctx.response.body = JSON.stringify({
-            status: 'success',
+            success: true,
             name: info.url,
             locked: fs.existsSync(path.resolve(target, 'threads', `${sha256(info.url)}.lock`)),
             required_info: config.common.requiredInfo,
@@ -63,7 +63,7 @@ module.exports = async (ctx) => {
         }, null, 4);
     } else {
         ctx.response.body = JSON.stringify({
-            status: 'success',
+            success: true,
             name: info.url,
             locked: false,
             required_info: config.common.requiredInfo,

@@ -14,7 +14,7 @@ module.exports = async (ctx) => {
     const info = ctx.request.body;
     if (!auth(info.key)) {
         ctx.status = 401;
-        ctx.response.body = JSON.stringify({ status: 'error', info: 'auth failed' }, null, 4);
+        ctx.response.body = JSON.stringify({ success: false, info: 'auth failed' }, null, 4);
         return false;
     }
 
@@ -47,6 +47,6 @@ module.exports = async (ctx) => {
     if (fs.existsSync(fileData)) fs.unlinkSync(fileData);
     if (fs.existsSync(fileLock)) fs.unlinkSync(fileLock);
 
-    ctx.response.body = JSON.stringify({ status: 'success' }, null, 4);
+    ctx.response.body = JSON.stringify({ success: true }, null, 4);
     return true;
 };

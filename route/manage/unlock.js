@@ -11,7 +11,7 @@ module.exports = async (ctx) => {
     const info = ctx.request.body;
     if (!auth(info.key)) {
         ctx.status = 401;
-        ctx.response.body = JSON.stringify({ status: 'error', info: 'auth failed' }, null, 4);
+        ctx.response.body = JSON.stringify({ success: false, info: 'auth failed' }, null, 4);
         return false;
     }
 
@@ -19,9 +19,9 @@ module.exports = async (ctx) => {
     printLog('debug', `Variable absPath: ${absPath}`);
     if (fs.existsSync(absPath)) {
         fs.unlinkSync(absPath);
-        ctx.response.body = JSON.stringify({ status: 'success' }, null, 4);
+        ctx.response.body = JSON.stringify({ success: true }, null, 4);
     } else {
-        ctx.response.body = JSON.stringify({ status: 'success', info: 'thread unlocked' }, null, 4);
+        ctx.response.body = JSON.stringify({ success: true, info: 'thread unlocked' }, null, 4);
     }
     return true;
 };

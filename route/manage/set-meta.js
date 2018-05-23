@@ -13,13 +13,13 @@ module.exports = async (ctx) => {
     const info = ctx.request.body;
     if (!auth(info.key)) {
         ctx.status = 401;
-        ctx.response.body = JSON.stringify({ status: 'error', info: 'auth failed' }, null, 4);
+        ctx.response.body = JSON.stringify({ success: false, info: 'auth failed' }, null, 4);
         return false;
     }
 
     if (isBlank(info.title) || isBlank(info.url)) {
         ctx.status = 400;
-        ctx.response.body = JSON.stringify({ status: 'error', info: 'bad meta' }, null, 4);
+        ctx.response.body = JSON.stringify({ success: false, info: 'bad meta' }, null, 4);
         return false;
     }
 
@@ -35,6 +35,6 @@ module.exports = async (ctx) => {
     }, {
         where: { name: info.url },
     });
-    ctx.response.body = JSON.stringify({ status: 'success' }, null, 4);
+    ctx.response.body = JSON.stringify({ success: true }, null, 4);
     return true;
 };

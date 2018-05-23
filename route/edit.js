@@ -17,7 +17,7 @@ module.exports = async (ctx) => {
     printLog('debug', `Use route handler ${__filename}`);
     if (!info.url || !fs.existsSync(absPath)) {
         ctx.status = 404;
-        ctx.response.body = JSON.stringify({ status: 'error', info: 'post not found' }, null, 4);
+        ctx.response.body = JSON.stringify({ success: false, info: 'post not found' }, null, 4);
         return false;
     }
     let currentError;
@@ -29,7 +29,7 @@ module.exports = async (ctx) => {
     }
     if (typeof currentError !== 'undefined') {
         ctx.status = 400;
-        ctx.response.body = JSON.stringify({ status: 'error', info: currentError }, null, 4);
+        ctx.response.body = JSON.stringify({ success: false, info: currentError }, null, 4);
         return false;
     }
     const sequelize = new Sequelize('main', null, null, {
@@ -59,12 +59,12 @@ module.exports = async (ctx) => {
     printLog('debug', editToken);
     if (!editToken || editToken !== info.token) {
         ctx.status = 401;
-        ctx.response.body = JSON.stringify({ status: 'error', info: 'bad token' }, null, 4);
+        ctx.response.body = JSON.stringify({ success: false, info: 'bad token' }, null, 4);
         return false;
     }
     if (gap > config.guard.gusetEditTimeout && config.guard.gusetEditTimeout !== 0) {
         ctx.status = 400;
-        ctx.response.body = JSON.stringify({ status: 'error', info: 'time expired' }, null, 4);
+        ctx.response.body = JSON.stringify({ success: false, info: 'time expired' }, null, 4);
         return false;
     }
     await post.update({
@@ -74,6 +74,6 @@ module.exports = async (ctx) => {
             id: info.id,
         },
     });
-    ctx.response.body = JSON.stringify({ status: 'success' }, null, 4);
+    ctx.response.body = JSON.stringify({ success: true }, null, 4);
     return true;
 };

@@ -11,7 +11,7 @@ module.exports = async (ctx) => {
     const info = ctx.request.body;
     if (!auth(info.key)) {
         ctx.status = 401;
-        ctx.response.body = JSON.stringify({ status: 'error', info: 'auth failed' }, null, 4);
+        ctx.response.body = JSON.stringify({ success: false, info: 'auth failed' }, null, 4);
         return false;
     }
     const sequelize = new Sequelize('main', null, null, {
@@ -29,7 +29,7 @@ module.exports = async (ctx) => {
     });
 
     ctx.response.body = JSON.stringify({
-        status: 'success',
+        success: true,
     }, null, 4);
     return true;
 };
