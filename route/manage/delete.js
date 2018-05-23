@@ -18,46 +18,35 @@ module.exports = async (ctx) => {
         return false;
     }
 
-    try {
-        // 删除索引记录
-        const seqList = new Sequelize('main', null, null, {
-            dialect: 'sqlite',
-            storage: path.resolve(target, 'index.db'),
-            operatorsAliases: false,
-        });
-        const thread = seqList.define('thread', structThread);
-        await thread.destroy({
-            force: true,
-            where: {
-                name: info.url,
-            },
-        });
+    const seqList = new Sequelize('main', null, null, {
+        dialect: 'sqlite',
+        storage: path.resolve(target, 'index.db'),
+        operatorsAliases: false,
+    });
+    const thread = seqList.define('thread', structThread);
+    await thread.destroy({
+        force: true,
+        where: {
+            name: info.url,
+        },
+    });
 
-        // 删除存在的最近评论
-        const postUnread = seqList.define('recent', structPostUnread, {
-            createdAt: false,
-            updatedAt: false,
-        });
-        await postUnread.destroy({
-            force: true,
-            where: {
-                location: info.url,
-            },
-        });
+    const postUnread = seqList.define('recent', structPostUnread, {
+        createdAt: false,
+        updatedAt: false,
+    });
+    await postUnread.destroy({
+        force: true,
+        where: {
+            location: info.url,
+        },
+    });
 
-        // 删除文件
-        const fileData = path.resolve(target, 'threads', `${sha256(info.url)}.db`);
-        const fileLock = path.resolve(target, 'threads', `${sha256(info.url)}.lock`);
-        if (fs.existsSync(fileData)) fs.unlinkSync(fileData);
-        if (fs.existsSync(fileLock)) fs.unlinkSync(fileLock);
+    const fileData = path.resolve(target, 'threads', `${sha256(info.url)}.db`);
+    const fileLock = path.resolve(target, 'threads', `${sha256(info.url)}.lock`);
+    if (fs.existsSync(fileData)) fs.unlinkSync(fileData);
+    if (fs.existsSync(fileLock)) fs.unlinkSync(fileLock);
 
-        // 操作结果
-        ctx.response.body = JSON.stringify({ status: 'success' }, null, 4);
-        return true;
-    } catch (e) {
-        printLog('error', `An error occurred while deleting the thread: ${e}`);
-        ctx.status = 500;
-        ctx.response.body = JSON.stringify({ status: 'error', info: 'delete thread failed' }, null, 4);
-        return false;
-    }
+    ctx.response.body = JSON.stringify({ status: 'success' }, null, 4);
+    return true;
 };

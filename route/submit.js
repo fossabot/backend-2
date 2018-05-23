@@ -105,15 +105,7 @@ module.exports = async (ctx) => {
         createdAt: false,
         updatedAt: false,
     });
-    let create;
-    try {
-        create = await Post.create(content);
-    } catch (e) {
-        printLog('error', `An error occurred while adding the data: ${e}`);
-        ctx.status = 500;
-        ctx.response.body = JSON.stringify({ status: 'error', info: 'add comment failed' }, null, 4);
-        return false;
-    }
+    const create = await Post.create(content);
     const editToken = config.guard.gusetEditTimeout < 0 ? false : getEditToken(
         info.email,
         getIP(ctx),

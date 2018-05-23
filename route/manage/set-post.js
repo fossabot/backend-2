@@ -17,31 +17,24 @@ module.exports = async (ctx) => {
         return false;
     }
 
-    try {
-        const keyList = Object.keys(info.data);
-        if (keyList.indexOf('id') !== -1) {
-            delete info.data.id;
-        }
-        const sequelize = new Sequelize('main', null, null, {
-            dialect: 'sqlite',
-            storage: absPath,
-            operatorsAliases: false,
-        });
-        const post = sequelize.define('post', structPost, {
-            createdAt: false,
-            updatedAt: false,
-        });
-        await post.update(info.data, {
-            where: {
-                id: info.id,
-            },
-        });
-        ctx.response.body = JSON.stringify({ status: 'success' }, null, 4);
-        return true;
-    } catch (e) {
-        printLog('error', `An error occurred while updating the post: ${e}`);
-        ctx.status = 500;
-        ctx.response.body = JSON.stringify({ status: 'error', info: 'update post failed' }, null, 4);
-        return false;
+    const keyList = Object.keys(info.data);
+    if (keyList.indexOf('id') !== -1) {
+        delete info.data.id;
     }
+    const sequelize = new Sequelize('main', null, null, {
+        dialect: 'sqlite',
+        storage: absPath,
+        operatorsAliases: false,
+    });
+    const post = sequelize.define('post', structPost, {
+        createdAt: false,
+        updatedAt: false,
+    });
+    await post.update(info.data, {
+        where: {
+            id: info.id,
+        },
+    });
+    ctx.response.body = JSON.stringify({ status: 'success' }, null, 4);
+    return true;
 };

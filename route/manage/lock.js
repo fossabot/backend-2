@@ -20,15 +20,8 @@ module.exports = async (ctx) => {
     if (fs.existsSync(absPath)) {
         ctx.response.body = JSON.stringify({ status: 'success' }, null, 4);
     } else {
-        try {
-            fs.openSync(absPath, 'w');
-            ctx.response.body = JSON.stringify({ status: 'success' }, null, 4);
-        } catch (e) {
-            printLog('error', `An error occurred while locking the thread: ${e}`);
-            ctx.status = 500;
-            ctx.response.body = JSON.stringify({ status: 'error', info: 'lock thread failed' }, null, 4);
-            return false;
-        }
+        fs.openSync(absPath, 'w');
+        ctx.response.body = JSON.stringify({ status: 'success' }, null, 4);
     }
     return true;
 };

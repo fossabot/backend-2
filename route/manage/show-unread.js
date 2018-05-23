@@ -14,30 +14,23 @@ module.exports = async (ctx) => {
         ctx.response.body = JSON.stringify({ status: 'error', info: 'auth failed' }, null, 4);
         return false;
     }
-    try {
-        const sequelize = new Sequelize('main', null, null, {
-            dialect: 'sqlite',
-            storage: path.resolve(target, 'index.db'),
-            operatorsAliases: false,
-        });
+    const sequelize = new Sequelize('main', null, null, {
+        dialect: 'sqlite',
+        storage: path.resolve(target, 'index.db'),
+        operatorsAliases: false,
+    });
 
-        const unreadPost = sequelize.define('recent', structPostUnread, {
-            createdAt: false,
-            updatedAt: false,
-        });
-        const content = await unreadPost.findAll({
-            where: { marked: false },
-        });
+    const unreadPost = sequelize.define('recent', structPostUnread, {
+        createdAt: false,
+        updatedAt: false,
+    });
+    const content = await unreadPost.findAll({
+        where: { marked: false },
+    });
 
-        ctx.response.body = JSON.stringify({
-            status: 'success',
-            content,
-        }, null, 4);
-    } catch (e) {
-        printLog('error', `An error occurred while showing unread post: ${e}`);
-        ctx.status = 500;
-        ctx.response.body = JSON.stringify({ status: 'error', info: 'list unread post failed' }, null, 4);
-        return false;
-    }
+    ctx.response.body = JSON.stringify({
+        status: 'success',
+        content,
+    }, null, 4);
     return true;
 };

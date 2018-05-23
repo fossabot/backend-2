@@ -18,14 +18,8 @@ module.exports = async (ctx) => {
     const absPath = path.resolve(target, 'threads', `${sha256(info.url)}.lock`);
     printLog('debug', `Variable absPath: ${absPath}`);
     if (fs.existsSync(absPath)) {
-        try {
-            fs.unlinkSync(absPath);
-            ctx.response.body = JSON.stringify({ status: 'success' }, null, 4);
-        } catch (e) {
-            ctx.status = 500;
-            ctx.response.body = JSON.stringify({ status: 'error', info: 'unlock thread failed' }, null, 4);
-            return false;
-        }
+        fs.unlinkSync(absPath);
+        ctx.response.body = JSON.stringify({ status: 'success' }, null, 4);
     } else {
         ctx.response.body = JSON.stringify({ status: 'success', info: 'thread unlocked' }, null, 4);
     }

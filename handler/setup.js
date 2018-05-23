@@ -84,21 +84,17 @@ module.exports = async (target) => {
     };
 
     // 创建空的 index.db 和若干文件夹
-    try {
-        await initIndex(path.resolve(targetDir, 'index.db'));
-        fs.mkdirSync(path.resolve(targetDir, 'config'));
-        const keyList = Object.keys(initConfig);
-        for (let i = 0; i < keyList.length; i += 1) {
-            fs.writeFileSync(
-                path.resolve(targetDir, `config/${keyList[i]}.json`),
-                JSON.stringify(initConfig[keyList[i]], null, 4),
-            );
-        }
-        fs.mkdirSync(path.resolve(targetDir, 'threads'));
-        fs.mkdirpSync(path.resolve(targetDir, 'cache/recentIP'));
-    } catch (e) {
-        printLog('error', `An error occurred while setup the data directory: ${e}`);
+    await initIndex(path.resolve(targetDir, 'index.db'));
+    fs.mkdirSync(path.resolve(targetDir, 'config'));
+    const keyList = Object.keys(initConfig);
+    for (let i = 0; i < keyList.length; i += 1) {
+        fs.writeFileSync(
+            path.resolve(targetDir, `config/${keyList[i]}.json`),
+            JSON.stringify(initConfig[keyList[i]], null, 4),
+        );
     }
+    fs.mkdirSync(path.resolve(targetDir, 'threads'));
+    fs.mkdirpSync(path.resolve(targetDir, 'cache/recentIP'));
 
     // 任务完成，汇总！
     console.log('Your Pomment data directory has been created!');

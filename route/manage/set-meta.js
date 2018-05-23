@@ -23,25 +23,18 @@ module.exports = async (ctx) => {
         return false;
     }
 
-    try {
-        const seqList = new Sequelize('main', null, null, {
-            dialect: 'sqlite',
-            storage: path.resolve(target, 'index.db'),
-            operatorsAliases: false,
-        });
-        const thread = seqList.define('thread', structThread);
-        await thread.update({
-            title: info.title,
-            url: info.url,
-        }, {
-            where: { name: info.url },
-        });
-        ctx.response.body = JSON.stringify({ status: 'success' }, null, 4);
-        return true;
-    } catch (e) {
-        printLog('error', `An error occurred while updating the thread meta: ${e}`);
-        ctx.status = 500;
-        ctx.response.body = JSON.stringify({ status: 'error', info: 'update thread meta failed' }, null, 4);
-        return false;
-    }
+    const seqList = new Sequelize('main', null, null, {
+        dialect: 'sqlite',
+        storage: path.resolve(target, 'index.db'),
+        operatorsAliases: false,
+    });
+    const thread = seqList.define('thread', structThread);
+    await thread.update({
+        title: info.title,
+        url: info.url,
+    }, {
+        where: { name: info.url },
+    });
+    ctx.response.body = JSON.stringify({ status: 'success' }, null, 4);
+    return true;
 };
