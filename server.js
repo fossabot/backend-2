@@ -92,6 +92,13 @@ rout.post('/', systemInfo)
 
 app.use(rout.routes());
 
+app.use((ctx, next) => {
+    if (ctx.status >= 500) {
+        ctx.response.body = JSON.stringify({ status: 'error', info: 'internal server error' }, null, 4);
+    }
+    return next();
+});
+
 module.exports = () => {
     app.listen(config.common.webPort, config.common.webHost);
     printLog('info', `The HTTP server is http://${config.common.webHost}:${config.common.webPort}`);
