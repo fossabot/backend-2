@@ -7,7 +7,6 @@ const config = require('../../lib/config');
 const target = require('../../lib/base-path');
 const structPost = require('../../struct/post');
 const sha256 = require('../../lib/get-sha256');
-const getIP = require('../../lib/get-ip');
 const afterSubmit = require('../../handler/after-submit');
 
 const isBlank = str => (typeof str === 'undefined' || str === null || str.trim() === '');
@@ -54,8 +53,6 @@ module.exports = async (ctx) => {
         content: info.content,
         moderated: true,
         hidden: false,
-        ip: getIP(ctx),
-        user_agent: ctx.request.header['user-agent'],
         birth,
         by_admin: true,
         receive_email: true,

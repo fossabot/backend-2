@@ -92,8 +92,6 @@ module.exports = async (ctx) => {
         content: info.content,
         moderated: !config.common.moderation,
         hidden: false,
-        ip: getIP(ctx),
-        user_agent: ctx.request.header['user-agent'],
         birth,
         by_admin: false,
         receive_email: info.receiveEmail,
@@ -108,7 +106,6 @@ module.exports = async (ctx) => {
     const create = await Post.create(content);
     const editToken = config.guard.gusetEditTimeout < 0 ? false : getEditToken(
         info.email,
-        getIP(ctx),
         info.url,
         create.dataValues.id,
         birth,

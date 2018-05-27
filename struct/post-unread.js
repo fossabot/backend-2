@@ -8,8 +8,6 @@ module.exports = {
     content: { type: Sequelize.TEXT(), allowNull: false },
     moderated: { type: Sequelize.BOOLEAN(), allowNull: false },
     hidden: { type: Sequelize.BOOLEAN(), allowNull: false },
-    ip: { type: Sequelize.CHAR(48), allowNull: true },
-    user_agent: { type: Sequelize.TEXT(), allowNull: true },
     birth: { type: Sequelize.DATE(), allowNull: false },
     by_admin: { type: Sequelize.BOOLEAN(), allowNull: false },
     receive_email: { type: Sequelize.BOOLEAN(), allowNull: false },

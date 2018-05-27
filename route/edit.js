@@ -48,7 +48,6 @@ module.exports = async (ctx) => {
     });
     const editToken = config.guard.gusetEditTimeout < 0 ? false : getEditToken(
         verify.dataValues.email,
-        verify.dataValues.ip,
         info.url,
         verify.dataValues.id,
         verify.dataValues.birth,
