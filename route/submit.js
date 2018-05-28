@@ -31,7 +31,7 @@ module.exports = async (ctx) => {
 
     // 前置检查
     if (isBlank(info.name)) {
-        currentError = 'bad name';
+        info.name = null;
     }
     if (config.common.requireEmail
         && (isBlank(info.email) || !isVaildEmail(info.email))) {
