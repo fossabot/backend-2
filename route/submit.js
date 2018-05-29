@@ -33,12 +33,8 @@ module.exports = async (ctx) => {
     if (isBlank(info.name)) {
         info.name = null;
     }
-    if (config.common.requireEmail
-        && (isBlank(info.email) || !isVaildEmail(info.email))) {
+    if (isBlank(info.email) || !isVaildEmail(info.email)) {
         currentError = 'bad email';
-    }
-    if (config.common.requireWebsite && isBlank(info.website)) {
-        currentError = 'bad website';
     }
     if (isBlank(info.content)) {
         currentError = 'bad content';

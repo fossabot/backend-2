@@ -23,8 +23,6 @@ module.exports = async (target) => {
             webPort: 4600,
             admin: null,
             salt: randChar(24),
-            requireEmail: true,
-            requireWebsite: false,
             moderation: false,
             webhook: null,
             frontendLoader: {

@@ -10,8 +10,6 @@ module.exports = async (ctx) => {
     s.onload = function () {
         var pomment = new Pomment(e, opt.server, {
             fixedHeight: opt.fixedHeight,
-            requireEmail: ${config.common.requireEmail},
-            requireWebsite: ${config.common.requireWebsite}
         });
         pomment.init();
     }
