@@ -8,6 +8,7 @@ const printLog = require('./lib/log');
 const randChar = require('./lib/randchar');
 const targetHelper = require('./lib/target-dir');
 const config = require('./lib/config');
+const redis = require('redis');
 const systemInfo = require('./route/system-info');
 const show = require('./route/show');
 const edit = require('./route/edit');
@@ -27,12 +28,14 @@ const adminGetSingle = require('./route/manage/get-single');
 
 const salt = randChar(32);
 const app = new Koa();
+const redisClient = redis.createClient(config.redis.connection);
 
 app.use(logger());
 app.use(koaBody());
 
 // 用于传值（设置信息）的中间件
 app.use((ctx, next) => {
+    ctx.redisClient = redisClient;
     ctx.userConfig = {
         basePath: targetHelper(argv._[1]),
         salt,

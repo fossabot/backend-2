@@ -1,7 +1,6 @@
 const path = require('path');
 const Sequelize = require('sequelize');
 const structPost = require('../struct/post');
-const getEditToken = require('../lib/get-salted');
 const config = require('../lib/config');
 const target = require('../lib/base-path');
 const printLog = require('../lib/log');
@@ -9,6 +8,16 @@ const sha256 = require('../lib/get-sha256');
 const fs = require('fs');
 
 const isBlank = str => (typeof str === 'undefined' || str === null || str.trim() === '');
+
+const getProm = (ctx, value) => new Promise((resolve) => {
+    ctx.redisClient.get(value, (err, reply) => {
+        if (err) {
+            resolve(null);
+        } else {
+            resolve(reply);
+        }
+    });
+});
 
 module.exports = async (ctx) => {
     ctx.type = 'application/json';
@@ -46,17 +55,11 @@ module.exports = async (ctx) => {
             id: info.id,
         },
     });
-    const editToken = config.guard.gusetEditTimeout < 0 ? false : getEditToken(
-        verify.dataValues.email,
-        info.url,
-        verify.dataValues.id,
-        verify.dataValues.birth,
-        ctx.userConfig.salt,
-    ).digest('hex');
+    const editToken = await getProm(ctx, `${config.redis.prefix}${sha256(`${info.url}, ${info.id}`)}`);
+    printLog('debug', `${config.redis.prefix}${sha256(`${info.url}, ${info.id}`)}: ${editToken}`);
     const gap = (new Date().getTime() - verify.dataValues.birth.getTime()) / 1000;
     printLog('debug', `${gap}, ${config.guard.gusetEditTimeout}`);
-    printLog('debug', editToken);
-    if (!editToken || editToken !== info.token) {
+    if (config.guard.gusetEditTimeout < 0 || !editToken || editToken !== info.token) {
         ctx.status = 401;
         ctx.response.body = JSON.stringify({ success: false, info: 'bad token' }, null, 4);
         return false;

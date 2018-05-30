@@ -2,7 +2,7 @@ const fs = require('fs-extra');
 const path = require('path');
 const Sequelize = require('sequelize');
 const isVaildEmail = require('email-validator').validate;
-const getEditToken = require('../lib/get-salted');
+const getEditKey = require('../lib/get-salted');
 const printLog = require('../lib/log');
 const config = require('../lib/config');
 const target = require('../lib/base-path');
@@ -100,13 +100,8 @@ module.exports = async (ctx) => {
         updatedAt: false,
     });
     const create = await Post.create(content);
-    const editToken = config.guard.gusetEditTimeout < 0 ? false : getEditToken(
-        info.email,
-        info.url,
-        create.dataValues.id,
-        birth,
-        ctx.userConfig.salt,
-    ).digest('hex');
+    const editToken = getEditKey();
+    ctx.redisClient.set(`${config.redis.prefix}${sha256(`${info.url}, ${create.dataValues.id}`)}`, editToken);
     if (config.guard.coolDownTimeout >= 0) {
         fs.writeFileSync(cdPath, new Date().toISOString());
     }
