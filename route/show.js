@@ -45,11 +45,17 @@ module.exports = async (ctx) => {
             if (newItem.by_admin) {
                 newItem.dataValues.name = config.common.admin.username;
                 newItem.dataValues.email = config.common.admin.email;
+                newItem.dataValues.website = null;
             }
             // 电子邮件 md5
-            const emailHashed = crypto.createHash('md5');
-            emailHashed.update(newItem.email);
-            newItem.dataValues.emailHashed = emailHashed.digest('hex');
+            if (newItem.name) {
+                const emailHashed = crypto.createHash('md5');
+                emailHashed.update(newItem.email);
+                newItem.dataValues.emailHashed = emailHashed.digest('hex');
+            } else {
+                newItem.dataValues.emailHashed = null;
+                newItem.dataValues.website = null;
+            }
             delete newItem.dataValues.email;
             content.push(newItem);
         });
