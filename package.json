@@ -29,6 +29,7 @@
     "lodash": "^4.17.10",
     "minimist": "^1.2.0",
     "nodemailer": "^4.6.4",
+    "redis": "^2.8.0",
     "request": "^2.85.0",
     "scanf": "^1.0.0",
     "sequelize": "^4.37.7",
