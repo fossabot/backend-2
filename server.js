@@ -14,6 +14,7 @@ const show = require('./route/show');
 const edit = require('./route/edit');
 const submit = require('./route/submit');
 const frontendLoader = require('./route/frontend-loader');
+const deleteGuest = require('./route/delete');
 const unknown = require('./route/unknown');
 const adminListUnread = require('./route/manage/show-unread');
 const adminMarkUnread = require('./route/manage/mark-unread');
@@ -76,6 +77,7 @@ rout.post('/', systemInfo)
     .post('/v1/list', show)
     .post('/v1/submit', submit)
     .post('/v1/edit', edit)
+    .post('/v1/delete', deleteGuest)
     .get('/v1/loader.js', frontendLoader)
     .post('/v1/manage/list-unread', adminListUnread)
     .post('/v1/manage/mark', adminMarkUnread)
