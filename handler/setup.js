@@ -52,6 +52,10 @@ module.exports = async (target) => {
             coolDownTimeout: 30,
             badUserInfo: {},
         },
+        redis: {
+            connection: {},
+            prefix: 'POMMENT_',
+        },
     };
     if (fs.readdirSync(targetDir).length > 0) {
         printLog('debug', `The directory contains: ${fs.readdirSync(targetDir).join(', ')}`);
