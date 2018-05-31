@@ -1,3 +1,6 @@
+const fs = require('fs');
+const path = require('path');
+const target = require('./lib/base-path');
 const { URL } = require('url');
 const Koa = require('koa');
 const logger = require('koa-logger');
@@ -5,7 +8,6 @@ const rout = require('koa-router')();
 const koaBody = require('koa-body');
 const argv = require('minimist')(process.argv.slice(2));
 const printLog = require('./lib/log');
-const randChar = require('./lib/randchar');
 const targetHelper = require('./lib/target-dir');
 const config = require('./lib/config');
 const redis = require('redis');
@@ -27,9 +29,12 @@ const adminDelete = require('./route/manage/delete');
 const adminSubmit = require('./route/manage/submit');
 const adminGetSingle = require('./route/manage/get-single');
 
-const salt = randChar(32);
 const app = new Koa();
 const redisClient = redis.createClient(config.redis.connection);
+
+const loadPommentJS = () => {
+    global.POMMENT_JS = fs.readFileSync(path.resolve(target, 'pomment.js'), { encoding: 'utf8' });
+};
 
 app.use(logger());
 app.use(koaBody());
@@ -39,7 +44,6 @@ app.use((ctx, next) => {
     ctx.redisClient = redisClient;
     ctx.userConfig = {
         basePath: targetHelper(argv._[1]),
-        salt,
     };
     return next();
 });
@@ -105,6 +109,16 @@ app.use((ctx, next) => {
 });
 
 module.exports = () => {
+    if (!fs.existsSync(path.resolve(target, 'pomment.js'))) {
+        printLog('error', 'Please put pomment.js in the root of your data directory');
+        process.exit(1);
+    }
+    fs.watch(path.resolve(target, 'pomment.js'), { encoding: 'utf8' }, (eventType) => {
+        if (eventType === 'change') {
+            loadPommentJS();
+        }
+    });
+    loadPommentJS();
     app.listen(config.common.webPort, config.common.webHost);
     printLog('info', `The HTTP server is http://${config.common.webHost}:${config.common.webPort}`);
 };

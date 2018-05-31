@@ -26,7 +26,6 @@ module.exports = async (target) => {
             moderation: false,
             webhook: null,
             frontendLoader: {
-                script: 'path/to/your/pomment.min.js',
                 element: '#pomment',
                 server: 'http://127.0.0.1:3000',
                 fixedHeight: 0,
